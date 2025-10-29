@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ball Trajectory Visualization</title>
+    <style>
+        .svg_traj {
+            stroke: #333;
+            stroke-width: 2;
+        }
+
+        .svg_point {
+            fill: #333;
+            stroke: #333;
+            stroke-width: 1;
+        }
+
+        .svg_mask_traj {
+            stroke: #ff0000;
+            stroke-width: 3;
+            stroke-dasharray: 5,5;
+        }
+
+        .svg_mask_point {
+            fill: #ff0000;
+            stroke: #ff0000;
+            stroke-width: 2;
+        }
+
+        svg {
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<svg viewBox="0 0 600 400" width="600" height="400">
+    <g id="svg_ball_bottom"></g>
+    <g id="svg_ball_middle"></g>
+    <g id="svg_ball_top"></g>
+    <g id="svg_traj"></g>
+</svg>
+
+<script type="module">
+    import { DOMPathRenderer, SchedSegment, SchedPoint } from './DOMPath.js';
+
+    // Example usage - create a sample path
+    const path = [
+        new SchedSegment(new SchedPoint(50, 50, false), new SchedPoint(150, 50, true), 1, true),
+        new SchedSegment(new SchedPoint(150, 50, true), new SchedPoint(250, 150, false), 1, false),
+        new SchedSegment(new SchedPoint(250, 150, false), new SchedPoint(350, 200, true), 1, true),
+        new SchedSegment(new SchedPoint(350, 200, true), new SchedPoint(450, 250, false), 1, false)
+    ];
+
+    // Create renderer and draw
+    const renderer = new DOMPathRenderer(path);
+    renderer.DrawTrajectory();
+    renderer.DrawMask();
+
+    renderer.ArrangeLayer(1);
+</script>
+</body>
+</html>
