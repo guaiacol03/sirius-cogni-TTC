@@ -17,13 +17,19 @@
 
         .svg_mask_traj {
             stroke: #ff0000;
-            stroke-width: 3;
+            stroke-width: 10;
             stroke-dasharray: 5,5;
         }
 
         .svg_mask_point {
             fill: #ff0000;
             stroke: #ff0000;
+            stroke-width: 2;
+        }
+
+        .floating_ball {
+            fill: #00ff00;
+            stroke: #006600;
             stroke-width: 2;
         }
 
@@ -36,7 +42,9 @@
 <body>
 <svg viewBox="0 0 600 400" width="600" height="400">
     <g id="svg_ball_bottom"></g>
-    <g id="svg_ball_middle"></g>
+    <g id="svg_ball_middle">
+        <circle id="floating_ball" class="floating_ball" cx="300" cy="200" r="15" />
+    </g>
     <g id="svg_ball_top"></g>
     <g id="svg_traj"></g>
 </svg>
@@ -58,6 +66,20 @@
     renderer.DrawMask();
 
     renderer.ArrangeLayer(1);
+
+    // Add floating ball that follows cursor
+    const floatingBall = document.getElementById('floating_ball');
+    const svgElement = document.querySelector('svg');
+
+    svgElement.addEventListener('mousemove', (event) => {
+        const svgPoint = svgElement.createSVGPoint();
+        svgPoint.x = event.clientX;
+        svgPoint.y = event.clientY;
+        const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
+
+        floatingBall.setAttribute('cx', transformedPoint.x);
+        floatingBall.setAttribute('cy', transformedPoint.y);
+    });
 </script>
 </body>
 </html>
