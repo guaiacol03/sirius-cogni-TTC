@@ -4,10 +4,21 @@ export class SchedSegment extends Path.Segment {
     style;
     maskStyle;
 
+    // TODO should be invisible
+    static #defaultStyle = 'svg_traj';
+    static #defaultMaskStyle = 'svg_mask_traj'
+
     constructor(p1, p2, speed, masked) {
         super(p1, p2, speed);
-        this.style = "svg_traj";
-        this.maskStyle = masked ? "svg_mask_traj" : null;
+        this.style = SchedSegment.#defaultStyle;
+        this.maskStyle = masked ? SchedSegment.#defaultMaskStyle : null;
+    }
+
+    static withStyle(p1, p2, speed, style, maskStyle=null) {
+        let ret = new SchedSegment(p1, p2, speed, false);
+        ret.style = style;
+        ret.maskStyle = maskStyle;
+        return ret;
     }
 
     new(p1, p2, speed) {
@@ -23,10 +34,21 @@ export class SchedPoint extends Path.Point {
     maskStyle;
     style;
 
+    // TODO should be invisible
+    static #defaultStyle = 'svg_point';
+    static #defaultMaskStyle = 'svg_mask_point'
+
     constructor(x, y, masked) {
         super(x, y);
-        this.style = "svg_point";
-        this.maskStyle = masked ? "svg_mask_point" : null;
+        this.style = SchedPoint.#defaultStyle;
+        this.maskStyle = masked ? SchedPoint.#defaultMaskStyle : null;
+    }
+
+    static withStyle(p, style, maskStyle=null) {
+        let ret = new SchedPoint(p.x, p.y, false);
+        ret.style = style;
+        ret.maskStyle = maskStyle;
+        return ret;
     }
 
     new(x, y) {
@@ -45,17 +67,32 @@ export class DOMPathRenderer {
     #topLayer;
     #trajLayer;
 
-    constructor(path) {
+    constructor() {
         this.#bottomLayer = document.getElementById("svg_ball_bottom");
         this.#topLayer = document.getElementById("svg_ball_top");
         this.#trajLayer = document.getElementById("svg_traj");
+    }
 
-        this.points.push(path[0].p1);
-        for (let i= 0; i < path.length; i++) {
-            this.points.push(path[i].p2);
+    Update(path) {
+        // cleanup drawn elements
+        this.#bottomLayer.innerHTML = '';
+        this.#topLayer.innerHTML = '';
+        this.#trajLayer.innerHTML = '';
+
+        this.path = null;
+        this.points = []
+        this.levels = {};
+
+        if (path) {
+            this.path = path;
+            this.points.push(path[0].p1);
+            for (let i= 0; i < path.length; i++) {
+                this.points.push(path[i].p2);
+            }
+
+            this.DrawTrajectory();
+            this.DrawMask();
         }
-
-        this.path = path;
     }
 
     DrawTrajectory() {
@@ -121,12 +158,6 @@ export class DOMPathRenderer {
             }
         }
     }
-
-    Cleanup() {
-        this.#bottomLayer.innerHTML = '';
-        this.#topLayer.innerHTML = '';
-        this.#trajLayer.innerHTML = '';
-    }
 }
 
 function makeLine(p1, p2, cl) {
@@ -140,7 +171,7 @@ function makeLine(p1, p2, cl) {
     return line;
 }
 
-function makePoint(p, r, cl) {
+export function makePoint(p, r, cl) {
     let point = document.createElementNS('http://www.w3.org/2000/svg',
         'circle');
     point.setAttribute('cx', p.x.toString());

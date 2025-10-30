@@ -50,22 +50,32 @@
 </svg>
 
 <script type="module">
-    import { DOMPathRenderer, SchedSegment, SchedPoint } from './DOMPath.js';
+    import { Segment, Point } from './Path.js';
+    import { Styler, NormalAnimation } from './DOMBall.js';
+    import { DOMPathRenderer } from './DOMPath.js';
 
     // Example usage - create a sample path
     const path = [
-        new SchedSegment(new SchedPoint(50, 50, false), new SchedPoint(150, 50, true), 1, true),
-        new SchedSegment(new SchedPoint(150, 50, true), new SchedPoint(250, 150, false), 1, false),
-        new SchedSegment(new SchedPoint(250, 150, false), new SchedPoint(350, 200, true), 1, true),
-        new SchedSegment(new SchedPoint(350, 200, true), new SchedPoint(450, 250, false), 1, false)
+        new Segment(new Point(50, 50), new Point(150, 50), 1),
+        new Segment(new Point(150, 50), new Point(250, 150), 1),
+        new Segment(new Point(250, 150), new Point(350, 200), 1),
+        new Segment(new Point(350, 200), new Point(450, 250), 1)
     ];
 
-    // Create renderer and draw
-    const renderer = new DOMPathRenderer(path);
-    renderer.DrawTrajectory();
-    renderer.DrawMask();
+    const params = {
+        countFrom: 0,
+        countTo: -1,
+        distance: 150,
+        invert: true
+    }
 
-    renderer.ArrangeLayer(1);
+    // Process path
+    let na = new NormalAnimation(null, null, Styler)
+    na.RebuildPath(path, params)
+
+    // Create renderer and draw
+    const renderer = new DOMPathRenderer();
+    renderer.Update(na.path);
 
     // Add floating ball that follows cursor
     const floatingBall = document.getElementById('floating_ball');
