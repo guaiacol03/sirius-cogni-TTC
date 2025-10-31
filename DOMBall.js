@@ -7,7 +7,7 @@ export class DOMBallAnimator {
     style;
 
     static #defaultPoint = new Path.Point(0, 0);
-    static #defaultStyle = 'floating_ball+15';
+    static #defaultStyle = 'floating_ball+10';
 
     constructor() {
         this.#midLayer = document.getElementById("svg_ball_middle");

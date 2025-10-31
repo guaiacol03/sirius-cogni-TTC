@@ -4,6 +4,8 @@ import * as Anim from "./PathAnimation.js"
 
 export class NormalAnimation {
     path;
+    showResult;
+    stopAtEnd;
     #pathHandler;
     #ballHandler;
     #animHandler;
@@ -19,7 +21,7 @@ export class NormalAnimation {
             traj: 'svg_traj',
             traj_masked: 'svg_mask_traj',
             point: 'svg_point+5',
-            point_masked: 'svg_mask_point+10',
+            point_masked: 'svg_mask_point+25',
             target: 'svg_point+5'
         }
 
@@ -40,12 +42,17 @@ export class NormalAnimation {
             return nPts;
         }
 
-        const simpleTrajMerge = (p1, p2, traj, isMasked) => {
+        const simpleTrajMerge = (p1, p2, traj, isMasked, visible) => {
             let nTraj = [];
             for (let i = 0; i < traj.length; i++) {
                 let seg = traj[i];
-                let nSeg = DOM.SchedSegment.withStyle(p1[i], p2[i], seg.speed,
-                    styles.traj, isMasked ? styles.traj_masked : null);
+                let nSeg;
+                if (visible) {
+                    nSeg = DOM.SchedSegment.withStyle(p1[i], p2[i], seg.speed,
+                        styles.traj, isMasked ? styles.traj_masked : null);
+                } else {
+                    nSeg = new DOM.SchedSegment(p1[i], p2[i], seg.speed, isMasked);
+                }
                 nTraj.push(nSeg);
             }
             return nTraj;
@@ -67,7 +74,7 @@ export class NormalAnimation {
 
         let convBP = simpleConvert(beforePts.p1, false, false)
         let convAP = simpleConvert(beforePts.p2, false, false)
-        let convBefore = simpleTrajMerge(convBP, convAP, slicePath.beforePath, false);
+        let convBefore = simpleTrajMerge(convBP, convAP, slicePath.beforePath, false, true);
 
         let afterPts = simpleTrajSplit(slicePath.afterPath);
 
@@ -78,7 +85,17 @@ export class NormalAnimation {
             let nlp = DOM.SchedPoint.withStyle(lp, styles.target, styles.point_masked);
             convAP[convAP.length - 1] = nlp;
         }
-        let convAfter = simpleTrajMerge(convBP, convAP, slicePath.afterPath, true);
+        let convAfter = simpleTrajMerge(convBP, convAP, slicePath.afterPath, true, true);
+
+        { // add final extension
+            let lSeg = slicePath.afterPath[slicePath.afterPath.length - 1];
+            let finSeg = buildToBorder(lSeg);
+
+            let convP = simpleConvert([finSeg.p1, finSeg.p2], true, false)
+            let convSeg = simpleTrajMerge([convP[0]], [convP[1]], [lSeg],
+                true, false);
+            convAfter = convAfter.concat(convSeg);
+        }
 
         this.path = convBefore.concat(convAfter);
     }
@@ -86,16 +103,35 @@ export class NormalAnimation {
     startTime;
     #lastLevel
     #resolveFn
+    #ended = false;
     Play() {
         this.#lastLevel = this.#animHandler.segment;
         let prom = new Promise((res) => { this.#resolveFn = res; });
+        this.#spaceEventInst = this.#spaceEvent.bind(this);
 
+        window.addEventListener('keydown', this.#spaceEventInst);
         window.requestAnimationFrame((time) => {
             this.startTime = time;
             this.#animHandler.Start(time);
             this.#advancePlay(time);
         });
         return prom;
+    }
+
+    #spaceEvent(e) {
+        if (e.charCode === 0) {
+            this.Stop();
+        }
+    }
+    #spaceEventInst;
+
+    Stop() {
+        this.#ended = true;
+        window.removeEventListener('keydown', this.#spaceEventInst);
+
+        if (this.showResult) {
+            this.#pathHandler.ArrangeLayer(-Infinity);
+        }
     }
 
     #advancePlay(time) {
@@ -107,9 +143,12 @@ export class NormalAnimation {
             this.#pathHandler.ArrangeLayer(seg);
         }
 
-        if (!this.#animHandler.endTimestamp) {
+        let isFin = this.#animHandler.segment >= this.path.length - 1;
+
+        if (!(isFin && this.stopAtEnd) && !this.#animHandler.endTimestamp && !this.#ended) {
             window.requestAnimationFrame(this.#advancePlay.bind(this));
         } else {
+            this.Stop();
             this.#resolveFn();
         }
     }

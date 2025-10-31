@@ -1,5 +1,15 @@
 import {Point, Segment} from "./Path.js"
 
+const LIBRARY_T = [
+    [
+        {x: 100, y: 100},
+        {x: 200, y: 100},
+        {x: 100, y: 200},
+        {x: 200, y: 200},
+        {x: 100, y: 100}
+    ]
+]
+
 const LIBRARY_H1 = [
     [
         { x: 508, y: 146 },
@@ -899,6 +909,7 @@ const LIBRARY_S2 = [
 ];
 
 export const LIBRARY = {
+    T: LIBRARY_T,
     H1: LIBRARY_H1,
     H2: LIBRARY_H2,
     H3: LIBRARY_M1,

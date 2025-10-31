@@ -36,7 +36,7 @@ export class SchedPoint extends Path.Point {
 
     // should be invisible
     static #defaultStyle = 'svg_point_hidden+1';
-    static #defaultMaskStyle = 'svg_mask_point+1'
+    static #defaultMaskStyle = 'svg_mask_point+25'
 
     constructor(x, y, masked) {
         super(x, y);
@@ -147,7 +147,7 @@ export class DOMPathRenderer {
         for (let key in this.levels) {
             let value = this.levels[key];
 
-            if (key < layer) {
+            if (key > layer + 1) {
                 if (value.parentElement.isEqualNode(this.#topLayer)) {
                     this.#bottomLayer.appendChild(value);
                 }

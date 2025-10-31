@@ -24,7 +24,7 @@
 
         .svg_mask_traj {
             stroke: #ffff00;
-            stroke-width: 12; /* thick enough to cover floating_ball */
+            stroke-width: 25; /* thick enough to cover floating_ball */
             stroke-dasharray: 5,5;
             fill: none;
             opacity: 0.7; /* semi-transparent for testing */
@@ -89,7 +89,7 @@
     const params = {
         countFrom: 0,
         countTo: -1,
-        distance: 150,
+        distance: 200,
         invert: true
     }
 
@@ -99,23 +99,29 @@
     // Get references to the info display elements
     const libraryNameElement = document.getElementById('libraryName');
     const trajectoryIndexElement = document.getElementById('trajectoryIndex');
-
     for (let ent in Lib.LIBRARY) {
         let trajs = Lib.LIBRARY[ent];
         let index = 0;
-        for (let path of Lib.LoadEntries(trajs, 0.5)) {
+        for (let path of Lib.LoadEntries(trajs, 0.1)) {
             // Update the display with current library and trajectory index
             libraryNameElement.textContent = ent;
             trajectoryIndexElement.textContent = index;
 
             let na = new NormalAnimation(domPathRd, domBallRd)
+            na.showResult = true;
+            na.stopAtEnd = false;
+
             na.SimpleConfigure(path, params)
             na.Load();
             await na.Play();
 
+            await new Promise(resolve => setTimeout(resolve, 900));
             index++;
         }
     }
+
+    // Restore original requestAnimationFrame when done
+    window.requestAnimationFrame = originalRequestAnimationFrame;
 </script>
 </body>
 </html>
