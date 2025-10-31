@@ -85,14 +85,17 @@ export class NormalAnimation {
 
     startTime;
     #lastLevel
+    #resolveFn
     Play() {
         this.#lastLevel = this.#animHandler.segment;
+        let prom = new Promise((res) => { this.#resolveFn = res; });
 
         window.requestAnimationFrame((time) => {
             this.startTime = time;
             this.#animHandler.Start(time);
             this.#advancePlay(time);
         });
+        return prom;
     }
 
     #advancePlay(time) {
@@ -106,6 +109,8 @@ export class NormalAnimation {
 
         if (!this.#animHandler.endTimestamp) {
             window.requestAnimationFrame(this.#advancePlay.bind(this));
+        } else {
+            this.#resolveFn();
         }
     }
 

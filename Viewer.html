@@ -63,18 +63,10 @@
 </svg>
 
 <script type="module">
-    import { Segment, Point } from './Path.js';
     import { NormalAnimation } from './NormalAnimator.js';
     import { DOMBallAnimator } from './DOMBall.js';
     import { DOMPathRenderer } from './DOMPath.js';
-
-    // Example usage - create a sample path
-    const path = [
-        new Segment(new Point(50, 50), new Point(150, 50), 1),
-        new Segment(new Point(150, 50), new Point(250, 150), 1),
-        new Segment(new Point(250, 150), new Point(350, 200), 1),
-        new Segment(new Point(350, 200), new Point(450, 250), 1)
-    ];
+    import * as Lib from './TrajLibrary.js';
 
     const params = {
         countFrom: 0,
@@ -83,11 +75,18 @@
         invert: true
     }
 
-    // Process path
-    let na = new NormalAnimation(new DOMPathRenderer(), new DOMBallAnimator())
-    na.SimpleConfigure(path, params)
-    na.Load();
-    na.Play();
+    let domPathRd = new DOMPathRenderer();
+    let domBallRd = new DOMBallAnimator();
+
+    for (let ent in Lib.LIBRARY) {
+        let trajs = Lib.LIBRARY[ent];
+        for (let path of Lib.LoadEntries(trajs, 0.5)) {
+            let na = new NormalAnimation(domPathRd, domBallRd)
+            na.SimpleConfigure(path, params)
+            na.Load();
+            await na.Play();
+        }
+    }
 
 </script>
 </body>
