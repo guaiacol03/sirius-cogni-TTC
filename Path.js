@@ -122,6 +122,15 @@ export function FindByDistance(path, distance) {
     return pp;
 }
 
+export function PosToDistance(path, pos) {
+    let distance = 0;
+    for (let i = 0; i < pos.segment; i++) {
+        distance += path[i].distance;
+    }
+    distance += pos.position;
+    return distance;
+}
+
 export function GetPathPoint(path, pos) {
     let curSegment = path[pos.segment];
 

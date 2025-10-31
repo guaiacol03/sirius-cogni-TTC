@@ -3,20 +3,21 @@ import * as Path from "./Path.js"
 import * as Anim from "./PathAnimation.js"
 
 export class NormalAnimation {
+    srcPath;
     path;
     showResult;
     stopAtEnd;
-    #pathHandler;
-    #ballHandler;
-    #animHandler;
-    #schedCrossing = {};
+    endCode;
+    _pathHandler;
+    _ballHandler;
+    _animHandler;
 
     constructor(pathHandler, ballHandler) {
-        this.#pathHandler = pathHandler;
-        this.#ballHandler = ballHandler;
+        this._pathHandler = pathHandler;
+        this._ballHandler = ballHandler;
     }
 
-    SimpleConfigure(path, params) {
+    Configure(path, params) {
         const styles = {
             traj: 'svg_traj',
             traj_masked: 'svg_mask_traj',
@@ -68,6 +69,7 @@ export class NormalAnimation {
             return { p1: rp1, p2: rp2 }
         }
 
+        this.srcPath = path;
         let slicePath = sliceByMask(path, params);
 
         let beforePts = simpleTrajSplit(slicePath.beforePath);
@@ -101,65 +103,79 @@ export class NormalAnimation {
     }
 
     startTime;
-    #lastLevel
-    #resolveFn
-    #ended = false;
+    _lastLevel
+    _resolveFn
     Play() {
-        this.#lastLevel = this.#animHandler.segment;
-        let prom = new Promise((res) => { this.#resolveFn = res; });
-        this.#spaceEventInst = this.#spaceEvent.bind(this);
+        this._lastLevel = this._animHandler.segment;
+        let prom = new Promise((res) => { this._resolveFn = res; });
+        this._spaceEventInst = this._spaceEvent.bind(this);
 
-        window.addEventListener('keydown', this.#spaceEventInst);
+        window.addEventListener('keydown', this._spaceEventInst);
         window.requestAnimationFrame((time) => {
             this.startTime = time;
-            this.#animHandler.Start(time);
-            this.#advancePlay(time);
+            this._animHandler.Start(time);
+            this._advancePlay(time);
         });
         return prom;
     }
 
-    #spaceEvent(e) {
+    Stop() {
+        this.endCode = "External";
+        this._termEvent();
+    }
+
+    _spaceEvent(e) {
         if (e.charCode === 0) {
-            this.Stop();
+            this.endCode = "Spacebar";
+            this._termEvent();
         }
     }
-    #spaceEventInst;
+    _spaceEventInst;
 
-    Stop() {
-        this.#ended = true;
-        window.removeEventListener('keydown', this.#spaceEventInst);
+    _termEvent() {
+        window.removeEventListener('keydown', this._spaceEventInst);
 
         if (this.showResult) {
-            this.#pathHandler.ArrangeLayer(-Infinity);
+            this._pathHandler.ArrangeLayer(-Infinity);
         }
+        this._resolveFn();
     }
 
-    #advancePlay(time) {
-        this.#animHandler.AdvanceState(time)
-        this.#ballHandler.Update(this.#animHandler.GetPoint());
+    _advancePlay(time) {
+        this._animHandler.AdvanceState(time)
+        this._ballHandler.Update(this._animHandler.GetPoint());
 
-        let seg = this.#animHandler.segment;
-        if (seg !== this.#lastLevel) {
-            this.#pathHandler.ArrangeLayer(seg);
+        let seg = this._animHandler.segment;
+        if (seg !== this._lastLevel) {
+            this._pathHandler.ArrangeLayer(seg);
+            this._lastLevel = seg;
         }
 
-        let isFin = this.#animHandler.segment >= this.path.length - 1;
+        if (this._animHandler.endTimestamp) {
+            this.endCode = "Overshoot";
+        }
+        if (this.stopAtEnd && (this._animHandler.segment >= this.path.length - 1)) {
+            this.endCode = "LastPoint";
+        }
 
-        if (!(isFin && this.stopAtEnd) && !this.#animHandler.endTimestamp && !this.#ended) {
-            window.requestAnimationFrame(this.#advancePlay.bind(this));
+        if (!this.endCode) {
+            window.requestAnimationFrame(this._advancePlay.bind(this));
         } else {
-            this.Stop();
-            this.#resolveFn();
+            this._termEvent();
         }
     }
 
     Load() {
-        this.#pathHandler.Update(this.path);
-        this.#animHandler = new Anim.PathAnimState(this.path);
-        this.#animHandler.AdvanceState(0);
+        this._pathHandler.Update(this.path);
+        this._animHandler = new Anim.PathAnimState(this.path);
+        this._animHandler.AdvanceState(0);
 
-        let initPt = this.#animHandler.GetPoint();
-        this.#ballHandler.Update(initPt);
+        let initPt = this._animHandler.GetPoint();
+        this._ballHandler.Update(initPt);
+    }
+
+    ProxyExec(fn) {
+        fn.bind(this)();
     }
 }
 

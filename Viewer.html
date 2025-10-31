@@ -85,6 +85,7 @@
     import { DOMBallAnimator } from './DOMBall.js';
     import { DOMPathRenderer } from './DOMPath.js';
     import * as Lib from './TrajLibrary.js';
+    import * as Log from './LogExtractor.js';
 
     const params = {
         countFrom: 0,
@@ -109,13 +110,13 @@
 
             let na = new NormalAnimation(domPathRd, domBallRd)
             na.showResult = true;
-            na.stopAtEnd = false;
+            na.stopAtEnd = true;
 
-            na.SimpleConfigure(path, params)
+            na.Configure(path, params)
             na.Load();
             await na.Play();
 
-            await new Promise(resolve => setTimeout(resolve, 900));
+            alert(Log.ExportNormalAnimator(na).endDist)
             index++;
         }
     }
