@@ -51,6 +51,19 @@
             border: 1px solid #ccc;
             background-color: #f9f9f9;
         }
+
+        .animation-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        .info-label {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +74,11 @@
 
     <g id="svg_traj"></g>
 </svg>
+
+<div id="animationInfo" class="animation-info">
+    <span class="info-label">Library:</span> <span id="libraryName">-</span> |
+    <span class="info-label">Trajectory Index:</span> <span id="trajectoryIndex">-</span>
+</div>
 
 <script type="module">
     import { NormalAnimation } from './NormalAnimator.js';
@@ -78,16 +96,26 @@
     let domPathRd = new DOMPathRenderer();
     let domBallRd = new DOMBallAnimator();
 
+    // Get references to the info display elements
+    const libraryNameElement = document.getElementById('libraryName');
+    const trajectoryIndexElement = document.getElementById('trajectoryIndex');
+
     for (let ent in Lib.LIBRARY) {
         let trajs = Lib.LIBRARY[ent];
+        let index = 0;
         for (let path of Lib.LoadEntries(trajs, 0.5)) {
+            // Update the display with current library and trajectory index
+            libraryNameElement.textContent = ent;
+            trajectoryIndexElement.textContent = index;
+
             let na = new NormalAnimation(domPathRd, domBallRd)
             na.SimpleConfigure(path, params)
             na.Load();
             await na.Play();
+
+            index++;
         }
     }
-
 </script>
 </body>
 </html>
