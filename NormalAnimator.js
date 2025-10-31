@@ -4,25 +4,23 @@ import * as Anim from "./PathAnimation.js"
 
 export class NormalAnimation {
     path;
-    styler
     #pathHandler;
     #ballHandler;
     #animHandler;
     #schedCrossing = {};
 
-    constructor(pathHandler, ballHandler, styler) {
+    constructor(pathHandler, ballHandler) {
         this.#pathHandler = pathHandler;
         this.#ballHandler = ballHandler;
-        this.styler = styler;
     }
 
     SimpleConfigure(path, params) {
         const styles = {
             traj: 'svg_traj',
             traj_masked: 'svg_mask_traj',
-            point: 'svg_point',
-            point_masked: 'svg_mask_point',
-            target: 'svg_point'
+            point: 'svg_point+5',
+            point_masked: 'svg_mask_point+10',
+            target: 'svg_point+5'
         }
 
         const simpleConvert = (pts, isMasked, visible) => {
@@ -67,18 +65,18 @@ export class NormalAnimation {
 
         let beforePts = simpleTrajSplit(slicePath.beforePath);
 
-        let convBP = simpleConvert(beforePts.p1, false, true)
+        let convBP = simpleConvert(beforePts.p1, false, false)
         let convAP = simpleConvert(beforePts.p2, false, false)
         let convBefore = simpleTrajMerge(convBP, convAP, slicePath.beforePath, false);
 
         let afterPts = simpleTrajSplit(slicePath.afterPath);
 
-        convBP = simpleConvert(afterPts.p1, true, true)
+        convBP = simpleConvert(afterPts.p1, true, false)
         convAP = simpleConvert(afterPts.p2, true, false)
         { // mark last point
             let lp = convAP[convAP.length - 1];
-            let nlp = DOM.SchedPoint.withStyle(lp, styles.point, styles.point_masked);
-            convAP[convAP.length - 1].p2 = nlp;
+            let nlp = DOM.SchedPoint.withStyle(lp, styles.target, styles.point_masked);
+            convAP[convAP.length - 1] = nlp;
         }
         let convAfter = simpleTrajMerge(convBP, convAP, slicePath.afterPath, true);
 

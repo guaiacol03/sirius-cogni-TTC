@@ -7,15 +7,13 @@ export class DOMBallAnimator {
     style;
 
     static #defaultPoint = new Path.Point(0, 0);
-    static #defaultRadius = 20;
-    static #defaultStyle = 'floating_ball';
+    static #defaultStyle = 'floating_ball+15';
 
     constructor() {
         this.#midLayer = document.getElementById("svg_ball_middle");
 
         this.#ball = DOM.makePoint(
             DOMBallAnimator.#defaultPoint,
-            DOMBallAnimator.#defaultRadius,
             DOMBallAnimator.#defaultStyle);
         this.#midLayer.appendChild(this.#ball);
 
@@ -27,6 +25,8 @@ export class DOMBallAnimator {
             this.#ball.setAttribute("cx", point.x);
             this.#ball.setAttribute("cy", point.y);
         }
-        this.#ball.setAttribute("class", this.style);
+        let spl = this.style.split('+')
+        this.#ball.setAttribute("r", spl[1]);
+        this.#ball.setAttribute("class", spl[0]);
     }
 }

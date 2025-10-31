@@ -4,8 +4,8 @@ export class SchedSegment extends Path.Segment {
     style;
     maskStyle;
 
-    // TODO should be invisible
-    static #defaultStyle = 'svg_traj';
+    // should be invisible
+    static #defaultStyle = 'svg_traj_hidden';
     static #defaultMaskStyle = 'svg_mask_traj'
 
     constructor(p1, p2, speed, masked) {
@@ -34,9 +34,9 @@ export class SchedPoint extends Path.Point {
     maskStyle;
     style;
 
-    // TODO should be invisible
-    static #defaultStyle = 'svg_point';
-    static #defaultMaskStyle = 'svg_mask_point'
+    // should be invisible
+    static #defaultStyle = 'svg_point_hidden+1';
+    static #defaultMaskStyle = 'svg_mask_point+1'
 
     constructor(x, y, masked) {
         super(x, y);
@@ -105,7 +105,7 @@ export class DOMPathRenderer {
         for (let i = 0; i < this.points.length; i++) {
             let elem = this.points[i];
             //TODO declare radius
-            let point = makePoint(elem, 10, elem.style)
+            let point = makePoint(elem, elem.style)
             this.#trajLayer.appendChild(point);
         }
     }
@@ -123,10 +123,10 @@ export class DOMPathRenderer {
 
             if (pt.maskStyle) {
                 if (i === 0) {
-                    let fMaskPoint = makePoint(pt, 10, pt.style)
+                    let fMaskPoint = makePoint(pt, pt.style)
                     res.push(fMaskPoint);
                 }
-                let maskPoint = makePoint(pt, 10, pt.style)
+                let maskPoint = makePoint(pt, pt.style)
                 res.push(maskPoint);
             }
 
@@ -171,12 +171,13 @@ function makeLine(p1, p2, cl) {
     return line;
 }
 
-export function makePoint(p, r, cl) {
+export function makePoint(p, cl) {
     let point = document.createElementNS('http://www.w3.org/2000/svg',
         'circle');
     point.setAttribute('cx', p.x.toString());
     point.setAttribute('cy', p.y.toString());
-    point.setAttribute('r', r.toString());
-    point.setAttribute('class', cl);
+    let spl = cl.split('+');
+    point.setAttribute('r', spl[1]);
+    point.setAttribute('class', spl[0]);
     return point;
 }

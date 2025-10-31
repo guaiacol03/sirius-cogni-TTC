@@ -5,32 +5,46 @@
     <title>Ball Trajectory Visualization</title>
     <style>
         .svg_traj {
-            stroke: #333;
+            stroke: #000000;
             stroke-width: 2;
+            fill: none;
         }
 
         .svg_point {
-            fill: #333;
-            stroke: #333;
+            fill: #000000;
+            stroke: #000000;
             stroke-width: 1;
-        }
-
-        .svg_mask_traj {
-            stroke: #ff0000;
-            stroke-width: 10;
-            stroke-dasharray: 5,5;
-        }
-
-        .svg_mask_point {
-            fill: #ff0000;
-            stroke: #ff0000;
-            stroke-width: 2;
         }
 
         .floating_ball {
             fill: #00ff00;
             stroke: #006600;
             stroke-width: 2;
+        }
+
+        .svg_mask_traj {
+            stroke: #ffff00;
+            stroke-width: 12; /* thick enough to cover floating_ball */
+            stroke-dasharray: 5,5;
+            fill: none;
+            opacity: 0.7; /* semi-transparent for testing */
+            stroke-linecap: round;
+        }
+
+        .svg_mask_point {
+            fill: #ffffff;
+            stroke: #ff0000; /* red outline for testing */
+            stroke-width: 2;
+            opacity: 0.7; /* semi-transparent for testing */
+        }
+
+        .svg_point_hidden,
+        .svg_traj_hidden {
+            display: none;
+            /* Alternative approach if display: none causes issues:
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none; */
         }
 
         svg {
@@ -53,7 +67,6 @@
     import { NormalAnimation } from './NormalAnimator.js';
     import { DOMBallAnimator } from './DOMBall.js';
     import { DOMPathRenderer } from './DOMPath.js';
-    import { Styler } from "./Styler.js"
 
     // Example usage - create a sample path
     const path = [
@@ -67,11 +80,11 @@
         countFrom: 0,
         countTo: -1,
         distance: 150,
-        invert: false
+        invert: true
     }
 
     // Process path
-    let na = new NormalAnimation(new DOMPathRenderer(), new DOMBallAnimator(), Styler)
+    let na = new NormalAnimation(new DOMPathRenderer(), new DOMBallAnimator())
     na.SimpleConfigure(path, params)
     na.Load();
     na.Play();
