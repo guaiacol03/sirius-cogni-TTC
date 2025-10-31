@@ -72,22 +72,10 @@
 
     // Process path
     let na = new NormalAnimation(new DOMPathRenderer(), new DOMBallAnimator(), Styler)
-    na.Configure(path, params)
+    na.SimpleConfigure(path, params)
     na.Load();
+    na.Play();
 
-    // Add floating ball that follows cursor
-    // const floatingBall = document.getElementById('floating_ball');
-    // const svgElement = document.querySelector('svg');
-    //
-    // svgElement.addEventListener('mousemove', (event) => {
-    //     const svgPoint = svgElement.createSVGPoint();
-    //     svgPoint.x = event.clientX;
-    //     svgPoint.y = event.clientY;
-    //     const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
-    //
-    //     floatingBall.setAttribute('cx', transformedPoint.x);
-    //     floatingBall.setAttribute('cy', transformedPoint.y);
-    // });
 </script>
 </body>
 </html>

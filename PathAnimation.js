@@ -5,12 +5,10 @@ export class PathAnimState extends Path.PathPos {
     lastTimestamp = 0; // to reset when not started yet
     startTimestamp;
     endTimestamp;
-    currentStatus;
 
     constructor(path) {
         super(0, 0);
         this.path = Path.ClonePath(path);
-        this.currentStatus = "created"
     }
 
     AdvanceState(time) {
@@ -34,7 +32,6 @@ export class PathAnimState extends Path.PathPos {
                 // end animation
                 this.position += remainsInSegment;
                 this.endTimestamp = time;
-                this.currentStatus = "finished";
             }
         } else {
             // advance within segment
@@ -46,7 +43,6 @@ export class PathAnimState extends Path.PathPos {
     Start(time) {
         this.startTimestamp = time;
         this.lastTimestamp = time;
-        this.currentStatus = "running";
     }
 
     GetPoint() {

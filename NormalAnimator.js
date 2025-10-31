@@ -16,121 +16,99 @@ export class NormalAnimation {
         this.styler = styler;
     }
 
-    Configure(path, params) {
+    SimpleConfigure(path, params) {
+        const styles = {
+            traj: 'svg_traj',
+            traj_masked: 'svg_mask_traj',
+            point: 'svg_point',
+            point_masked: 'svg_mask_point',
+            target: 'svg_point'
+        }
+
+        const simpleConvert = (pts, isMasked, visible) => {
+            let nPts = [];
+            for (let i = 0; i < pts.length; i++) {
+                let p = pts[i];
+
+                let np;
+                if (visible) {
+                    np = DOM.SchedPoint.withStyle(p, styles.point,
+                        isMasked ? styles.point_masked : null);
+                } else {
+                    np = new DOM.SchedPoint(p.x, p.y, isMasked);
+                }
+                nPts.push(np);
+            }
+            return nPts;
+        }
+
+        const simpleTrajMerge = (p1, p2, traj, isMasked) => {
+            let nTraj = [];
+            for (let i = 0; i < traj.length; i++) {
+                let seg = traj[i];
+                let nSeg = DOM.SchedSegment.withStyle(p1[i], p2[i], seg.speed,
+                    styles.traj, isMasked ? styles.traj_masked : null);
+                nTraj.push(nSeg);
+            }
+            return nTraj;
+        }
+
+        const simpleTrajSplit = (traj) => {
+            let rp1 = [];
+            let rp2 = [];
+            for (let i = 0; i < traj.length; i++) {
+                rp1.push(traj[i].p1);
+                rp2.push(traj[i].p2);
+            }
+            return { p1: rp1, p2: rp2 }
+        }
+
         let slicePath = sliceByMask(path, params);
 
-        let beforeSegments = [];
-        {
-            // split path points into array
-            let bFirstPoints = [];
-            let bLastPoints = [];
-            for (let i = 0; i < slicePath.beforePath.length; i++) {
-                bFirstPoints.push(slicePath.beforePath[i].p1);
-                bLastPoints.push(slicePath.beforePath[i].p2);
-            }
+        let beforePts = simpleTrajSplit(slicePath.beforePath);
 
-            let isMasked = params.invert;
-            // process first points
-            {
-                // initial point, outlined
-                let p = bFirstPoints[0];
-                let np = pointByStyler(p,
-                    isMasked ? this.styler.init_masked : this.styler.init);
-                bFirstPoints[0] = np;
+        let convBP = simpleConvert(beforePts.p1, false, true)
+        let convAP = simpleConvert(beforePts.p2, false, false)
+        let convBefore = simpleTrajMerge(convBP, convAP, slicePath.beforePath, false);
 
-                // subsequent, visible
-                for (let i = 1; i < bFirstPoints.length; i++) {
-                    p = bFirstPoints[i];
-                    np = pointByStyler(p,
-                        isMasked ? this.styler.traj_masked : this.styler.traj);
-                    bFirstPoints[i] = np;
-                }
-            }
+        let afterPts = simpleTrajSplit(slicePath.afterPath);
 
-            // process last points
-            {
-                let p, np, i;
-                // all until tie, invisible
-                for (i = 0; i < bLastPoints.length - 1; i++) {
-                    p = bLastPoints[i];
-                    np = new DOM.SchedPoint(p.x, p.y, isMasked);
-                    bLastPoints[i] = np;
-                }
-                // tie point, outlined
-                p = bLastPoints[i];
-                np = pointByStyler(p, this.styler.mask);
-                bLastPoints[i] = np;
-            }
+        convBP = simpleConvert(afterPts.p1, true, true)
+        convAP = simpleConvert(afterPts.p2, true, false)
+        { // mark last point
+            let lp = convAP[convAP.length - 1];
+            let nlp = DOM.SchedPoint.withStyle(lp, styles.point, styles.point_masked);
+            convAP[convAP.length - 1].p2 = nlp;
+        }
+        let convAfter = simpleTrajMerge(convBP, convAP, slicePath.afterPath, true);
 
-            // assemble segments
-            for (let i = 0; i < slicePath.beforePath.length; i++) {
-                let seg = slicePath.beforePath[i];
-                let nSeg = lineByStyler(bFirstPoints[i], bLastPoints[i], seg.speed,
-                    isMasked ? this.styler.traj_masked : this.styler.traj);
-                beforeSegments.push(nSeg);
-            }
+        this.path = convBefore.concat(convAfter);
+    }
+
+    startTime;
+    #lastLevel
+    Play() {
+        this.#lastLevel = this.#animHandler.segment;
+
+        window.requestAnimationFrame((time) => {
+            this.startTime = time;
+            this.#animHandler.Start(time);
+            this.#advancePlay(time);
+        });
+    }
+
+    #advancePlay(time) {
+        this.#animHandler.AdvanceState(time)
+        this.#ballHandler.Update(this.#animHandler.GetPoint());
+
+        let seg = this.#animHandler.segment;
+        if (seg !== this.#lastLevel) {
+            this.#pathHandler.ArrangeLayer(seg);
         }
 
-        let afterSegments = [];
-        {
-            // split path points into array
-            let bFirstPoints = [];
-            let bLastPoints = [];
-            for (let i = 0; i < slicePath.afterPath.length; i++) {
-                bFirstPoints.push(slicePath.afterPath[i].p1);
-                bLastPoints.push(slicePath.afterPath[i].p2);
-            }
-
-            let isMasked = !params.invert;
-            // process first points
-            {
-                let np, p;
-                // all points invisible
-                for (let i = 1; i < bFirstPoints.length; i++) {
-                    p = bFirstPoints[i];
-                    np = new DOM.SchedPoint(p.x, p.y, isMasked);
-                    bFirstPoints[i] = np;
-                }
-            }
-
-            // process last points
-            {
-                let p, np, i;
-                // all until tie, invisible
-                for (i = 0; i < bLastPoints.length - 1; i++) {
-                    p = bLastPoints[i];
-                    np = pointByStyler(p,
-                        isMasked ? this.styler.traj_masked : this.styler.traj)
-                    bLastPoints[i] = np;
-                }
-                // end point, outlined
-                p = bLastPoints[i];
-                np = np = pointByStyler(p,
-                    isMasked ? this.styler.end_masked : this.styler.end)
-                bLastPoints[i] = np;
-            }
-
-            // assemble segments
-            for (let i = 0; i < slicePath.afterPath.length; i++) {
-                let seg = slicePath.afterPath[i];
-                let nSeg = lineByStyler(bFirstPoints[i], bLastPoints[i], seg.speed,
-                    isMasked ? this.styler.traj_masked : this.styler.traj);
-                afterSegments.push(nSeg);
-            }
-
-            // add last segment
-            {
-                let seg = slicePath.afterPath[slicePath.afterPath.length - 1];
-                let nRaw = buildToBorder(seg);
-                let np0 = new DOM.SchedPoint(nRaw.p1.x, nRaw.p1.y, isMasked);
-                let np1 = new DOM.SchedPoint(nRaw.p2.x, nRaw.p2.y, isMasked);
-
-                let nSeg = new DOM.SchedSegment(np0, np1, seg.speed, isMasked);
-                afterSegments.push(nSeg);
-            }
+        if (!this.#animHandler.endTimestamp) {
+            window.requestAnimationFrame(this.#advancePlay.bind(this));
         }
-
-        this.path = beforeSegments.concat(afterSegments);
     }
 
     Load() {
@@ -141,14 +119,6 @@ export class NormalAnimation {
         let initPt = this.#animHandler.GetPoint();
         this.#ballHandler.Update(initPt);
     }
-}
-
-function pointByStyler(p, style) {
-    return DOM.SchedPoint.withStyle(p, style.pointStyle, style.pointMaskStyle);
-}
-
-function lineByStyler(p1, p2, speed, style) {
-    return DOM.SchedSegment.withStyle(p1, p2, speed, style.lineStyle, style.lineMaskStyle);
 }
 
 function buildToBorder(seg) {
