@@ -2,7 +2,7 @@ import * as Path from "./Path.js";
 
 export class PathAnimState extends Path.PathPos {
     path;
-    lastTimestamp;
+    lastTimestamp = 0; // to reset when not started yet
     startTimestamp;
     endTimestamp;
     currentStatus;

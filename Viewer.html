@@ -42,17 +42,18 @@
 <body>
 <svg viewBox="0 0 600 400" width="600" height="400">
     <g id="svg_ball_bottom"></g>
-    <g id="svg_ball_middle">
-        <circle id="floating_ball" class="floating_ball" cx="300" cy="200" r="15" />
-    </g>
+    <g id="svg_ball_middle"></g>
     <g id="svg_ball_top"></g>
+
     <g id="svg_traj"></g>
 </svg>
 
 <script type="module">
     import { Segment, Point } from './Path.js';
-    import { Styler, NormalAnimation } from './DOMBall.js';
+    import { NormalAnimation } from './NormalAnimator.js';
+    import { DOMBallAnimator } from './DOMBall.js';
     import { DOMPathRenderer } from './DOMPath.js';
+    import { Styler } from "./Styler.js"
 
     // Example usage - create a sample path
     const path = [
@@ -66,30 +67,27 @@
         countFrom: 0,
         countTo: -1,
         distance: 150,
-        invert: true
+        invert: false
     }
 
     // Process path
-    let na = new NormalAnimation(null, null, Styler)
-    na.RebuildPath(path, params)
-
-    // Create renderer and draw
-    const renderer = new DOMPathRenderer();
-    renderer.Update(na.path);
+    let na = new NormalAnimation(new DOMPathRenderer(), new DOMBallAnimator(), Styler)
+    na.Configure(path, params)
+    na.Load();
 
     // Add floating ball that follows cursor
-    const floatingBall = document.getElementById('floating_ball');
-    const svgElement = document.querySelector('svg');
-
-    svgElement.addEventListener('mousemove', (event) => {
-        const svgPoint = svgElement.createSVGPoint();
-        svgPoint.x = event.clientX;
-        svgPoint.y = event.clientY;
-        const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
-
-        floatingBall.setAttribute('cx', transformedPoint.x);
-        floatingBall.setAttribute('cy', transformedPoint.y);
-    });
+    // const floatingBall = document.getElementById('floating_ball');
+    // const svgElement = document.querySelector('svg');
+    //
+    // svgElement.addEventListener('mousemove', (event) => {
+    //     const svgPoint = svgElement.createSVGPoint();
+    //     svgPoint.x = event.clientX;
+    //     svgPoint.y = event.clientY;
+    //     const transformedPoint = svgPoint.matrixTransform(svgElement.getScreenCTM().inverse());
+    //
+    //     floatingBall.setAttribute('cx', transformedPoint.x);
+    //     floatingBall.setAttribute('cy', transformedPoint.y);
+    // });
 </script>
 </body>
 </html>
