@@ -1,21 +1,46 @@
 import {Point, Segment} from "./Path.js"
 
-const LIBRARY_T = [
-    [
-        {x: 100, y: 100},
-        {x: 200, y: 100},
-        {x: 100, y: 200},
-        {x: 200, y: 200},
-        {x: 100, y: 100}
-    ],
-    [
-        {x: 100, y: 100},
-        {x: 200, y: 100},
-        {x: 300, y: 100}
-    ]
-]
+class LibraryEntry{
+    constructor(ent, speed){
+        this.entries = ent;
+        this.speed = speed;
+    }
 
-const LIBRARY_H1 = [
+    *LoadEntries() {
+        for (let i = 0; i < this.entries.length; i++) {
+            let pts = this.entries[i];
+            let traj = [];
+            for (let j = 1; j < pts.length; j++) {
+                let np0 = new Point(pts[j - 1].x, pts[j - 1].y);
+                let np1 = new Point(pts[j].x, pts[j].y);
+
+                let seg = new Segment(np0, np1, this.speed);
+                traj.push(seg);
+            }
+            yield traj;
+        }
+    }
+}
+
+const speed_s1 = 0.2;
+const speed_s2 = 0.4;
+
+export const TEST = new LibraryEntry([
+        [
+            {x: 100, y: 100},
+            {x: 200, y: 100},
+            {x: 100, y: 200},
+            {x: 200, y: 200},
+            {x: 100, y: 100}
+        ],
+        [
+            {x: 100, y: 100},
+            {x: 200, y: 100},
+            {x: 300, y: 100}
+        ]
+    ], 0.1)
+
+export const LONG_S1 = new LibraryEntry([
     [
         { x: 508, y: 146 },
         { x: 568, y: 235 },
@@ -33,6 +58,7 @@ const LIBRARY_H1 = [
         { x: 195, y: 299 },
         { x: 261, y: 263 },
     ],
+
     [
         { x: 475, y: 221 },
         { x: 572, y: 289 },
@@ -50,6 +76,7 @@ const LIBRARY_H1 = [
         { x: 379, y: 288 },
         { x: 449, y: 262 },
     ],
+
     [
         { x: 274, y: 263 },
         { x: 164, y: 261 },
@@ -67,6 +94,7 @@ const LIBRARY_H1 = [
         { x: 404, y: 262 },
         { x: 337, y: 295 },
     ],
+
     [
         { x: 443, y: 135 },
         { x: 336, y: 120 },
@@ -84,6 +112,7 @@ const LIBRARY_H1 = [
         { x: 419, y: 162 },
         { x: 435, y: 236 },
     ],
+
     [
         { x: 550, y: 137 },
         { x: 575, y: 224 },
@@ -101,6 +130,7 @@ const LIBRARY_H1 = [
         { x: 391, y: 264 },
         { x: 448, y: 213 },
     ],
+
     [
         { x: 184, y: 117 },
         { x: 274, y: 108 },
@@ -118,6 +148,7 @@ const LIBRARY_H1 = [
         { x: 103, y: 174 },
         { x: 127, y: 245 },
     ],
+
     [
         { x: 103, y: 149 },
         { x: 153, y: 232 },
@@ -135,6 +166,7 @@ const LIBRARY_H1 = [
         { x: 149, y: 110 },
         { x: 224, y: 101 },
     ],
+
     [
         { x: 130, y: 249 },
         { x: 184, y: 158 },
@@ -152,6 +184,7 @@ const LIBRARY_H1 = [
         { x: 558, y: 168 },
         { x: 579, y: 240 },
     ],
+
     [
         { x: 528, y: 153 },
         { x: 544, y: 255 },
@@ -169,6 +202,7 @@ const LIBRARY_H1 = [
         { x: 460, y: 141 },
         { x: 523, y: 102 },
     ],
+
     [
         { x: 438, y: 200 },
         { x: 535, y: 273 },
@@ -186,6 +220,7 @@ const LIBRARY_H1 = [
         { x: 407, y: 284 },
         { x: 480, y: 266 },
     ],
+
     [
         { x: 599, y: 274 },
         { x: 588, y: 178 },
@@ -203,6 +238,7 @@ const LIBRARY_H1 = [
         { x: 448, y: 259 },
         { x: 440, y: 185 },
     ],
+
     [
         { x: 105, y: 226 },
         { x: 141, y: 148 },
@@ -220,9 +256,9 @@ const LIBRARY_H1 = [
         { x: 185, y: 169 },
         { x: 256, y: 143 },
     ],
-];
+], speed_s1);
 
-const LIBRARY_H2 = [
+export const LONG_S2 = new LibraryEntry([
     [
         { x: 230, y: 107 },
         { x: 396, y: 99 },
@@ -240,6 +276,7 @@ const LIBRARY_H2 = [
         { x: 228, y: 316 },
         { x: 427, y: 323 },
     ],
+
     [
         { x: 570, y: 126 },
         { x: 533, y: 275 },
@@ -257,6 +294,7 @@ const LIBRARY_H2 = [
         { x: 299, y: 91 },
         { x: 498, y: 80 },
     ],
+
     [
         { x: 568, y: 160 },
         { x: 571, y: 320 },
@@ -274,6 +312,7 @@ const LIBRARY_H2 = [
         { x: 122, y: 250 },
         { x: 259, y: 104 },
     ],
+
     [
         { x: 422, y: 75 },
         { x: 582, y: 168 },
@@ -291,6 +330,7 @@ const LIBRARY_H2 = [
         { x: 273, y: 86 },
         { x: 75, y: 76 },
     ],
+
     [
         { x: 171, y: 252 },
         { x: 323, y: 310 },
@@ -308,6 +348,7 @@ const LIBRARY_H2 = [
         { x: 449, y: 325 },
         { x: 625, y: 235 },
     ],
+
     [
         { x: 387, y: 268 },
         { x: 575, y: 322 },
@@ -325,6 +366,7 @@ const LIBRARY_H2 = [
         { x: 411, y: 155 },
         { x: 542, y: 290 },
     ],
+
     [
         { x: 128, y: 252 },
         { x: 253, y: 319 },
@@ -342,6 +384,7 @@ const LIBRARY_H2 = [
         { x: 83, y: 77 },
         { x: 80, y: 277 },
     ],
+
     [
         { x: 103, y: 130 },
         { x: 140, y: 250 },
@@ -359,6 +402,7 @@ const LIBRARY_H2 = [
         { x: 479, y: 320 },
         { x: 582, y: 149 },
     ],
+
     [
         { x: 214, y: 89 },
         { x: 216, y: 200 },
@@ -376,6 +420,7 @@ const LIBRARY_H2 = [
         { x: 75, y: 278 },
         { x: 75, y: 78 },
     ],
+
     [
         { x: 263, y: 249 },
         { x: 263, y: 115 },
@@ -393,6 +438,7 @@ const LIBRARY_H2 = [
         { x: 467, y: 100 },
         { x: 538, y: 275 },
     ],
+
     [
         { x: 583, y: 277 },
         { x: 447, y: 162 },
@@ -410,6 +456,7 @@ const LIBRARY_H2 = [
         { x: 76, y: 103 },
         { x: 76, y: 302 },
     ],
+
     [
         { x: 234, y: 293 },
         { x: 228, y: 144 },
@@ -427,9 +474,9 @@ const LIBRARY_H2 = [
         { x: 562, y: 226 },
         { x: 373, y: 291 },
     ],
-];
+], speed_s2)
 
-const LIBRARY_M1 =  [
+export const MED_S1 =  new LibraryEntry([
     [
         { x: 195, y: 239 },
         { x: 257, y: 290 },
@@ -585,9 +632,9 @@ const LIBRARY_M1 =  [
         { x: 519, y: 296 },
         { x: 599, y: 237 },
     ],
-];
+], speed_s1);
 
-const LIBRARY_M2 = [
+export const MED_S2 = new LibraryEntry([
     [
         { x: 289, y: 119 },
         { x: 414, y: 127 },
@@ -731,9 +778,9 @@ const LIBRARY_M2 = [
         { x: 429, y: 298 },
         { x: 598, y: 298 },
     ],
-];
+], speed_s2);
 
-const LIBRARY_S1 = [
+export const SHORT_S1 = new LibraryEntry([
     [
         { x: 425, y: 267 },
         { x: 480, y: 291 },
@@ -821,9 +868,9 @@ const LIBRARY_S1 = [
         { x: 546, y: 216 },
         { x: 576, y: 273 },
     ],
-];
+], speed_s1)
 
-const LIBRARY_S2 = [
+export const SHORT_S2 = new LibraryEntry([
     [
         { x: 116, y: 296 },
         { x: 180, y: 219 },
@@ -911,29 +958,6 @@ const LIBRARY_S2 = [
         { x: 234, y: 253 },
         { x: 234, y: 153 },
     ],
-];
+], speed_s2);
 
-export const LIBRARY = {
-    T: LIBRARY_T,
-    H1: LIBRARY_H1,
-    H2: LIBRARY_H2,
-    M1: LIBRARY_M1,
-    M2: LIBRARY_M2,
-    S1: LIBRARY_S1,
-    S2: LIBRARY_S2
-}
-
-export function* LoadEntries(lib, speed) {
-    for (let i = 0; i < lib.length; i++) {
-        let pts = lib[i];
-        let traj = []
-        for (let j = 1; j < pts.length; j++) {
-            let np0 = new Point(pts[j-1].x, pts[j-1].y);
-            let np1 = new Point(pts[j].x, pts[j].y);
-
-            let seg = new Segment(np0, np1, speed);
-            traj.push(seg);
-        }
-        yield traj;
-    }
-}
+// 3 раза из каждой

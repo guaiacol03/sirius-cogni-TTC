@@ -104,7 +104,6 @@ export class DOMPathRenderer {
 
         for (let i = 0; i < this.points.length; i++) {
             let elem = this.points[i];
-            //TODO declare radius
             let point = makePoint(elem, elem.style)
             this.#trajLayer.appendChild(point);
         }

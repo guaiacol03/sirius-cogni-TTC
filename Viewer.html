@@ -12,9 +12,30 @@
             overflow: hidden;
         }
 
+        .instructions-box {
+            width: 100%;
+            background-color: #e8f0fe;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 20px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            box-sizing: border-box;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        /* Hidden state (can be toggled dynamically) */
+        .instructions-box.hidden {
+            height: 0;
+            width: 0;
+            padding: 0;
+            overflow: hidden;
+            border: none;
+        }
+
         .svg-container {
             width: 100%;
-            height: calc(100vh - 60px); /* Reserve space for info panel */
+            height: calc(100vh - 120px); /* adjusted to account for top + info box */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -48,111 +69,51 @@
 
         .svg_mask_traj {
             stroke: #ffff00;
-            stroke-width: 25; /* thick enough to cover floating_ball */
+            stroke-width: 25;
             stroke-dasharray: 5,5;
             fill: none;
-            opacity: 0.7; /* semi-transparent for testing */
+            opacity: 0.7;
             stroke-linecap: round;
         }
 
         .svg_mask_point {
             fill: #ffffff;
-            stroke: #ff0000; /* red outline for testing */
+            stroke: #ff0000;
             stroke-width: 2;
-            opacity: 0.7; /* semi-transparent for testing */
+            opacity: 0.7;
         }
 
         .svg_point_hidden,
         .svg_traj_hidden {
             display: none;
-            /* Alternative approach if display: none causes issues:
-            visibility: hidden;
-            opacity: 0;
-            pointer-events: none; */
         }
 
-        .animation-info {
-            height: 60px;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-radius: 5px;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .info-label {
-            font-weight: bold;
-        }
-
-        .info-content {
-            display: flex;
-            gap: 20px;
-        }
     </style>
 </head>
 <body>
+
+<div id="instructionsBox" class="instructions-box">
+    <strong>Instructions:</strong>
+    Use this visualization to explore different ball trajectories.
+    The animation cycles through predefined paths in libraries H1 and H2.
+</div>
+
 <div class="svg-container">
     <svg viewBox="0 0 700 400" preserveAspectRatio="xMidYMid meet">
         <g id="svg_ball_bottom"></g>
         <g id="svg_ball_middle"></g>
         <g id="svg_ball_top"></g>
-
         <g id="svg_traj"></g>
     </svg>
 </div>
 
-<div id="animationInfo" class="animation-info">
-    <div class="info-content">
-        <div><span class="info-label">Library:</span> <span id="libraryName">-</span></div>
-        <div><span class="info-label">Trajectory Index:</span> <span id="trajectoryIndex">-</span></div>
-    </div>
-</div>
+<iframe src="./Instructions.html" id="instructionTexts" height="0" width="0"></iframe>
 
 <script type="module">
-    import { NormalAnimation } from './NormalAnimator.js';
-    import { DOMBallAnimator } from './DOMBall.js';
-    import { DOMPathRenderer } from './DOMPath.js';
-    import * as Lib from './TrajLibrary.js';
-    import * as Log from './LogExtractor.js';
-
-    const params = {
-        countFrom: 0,
-        countTo: -1,
-        distance: 1,
-        invert: true
-    }
-
-    let domPathRd = new DOMPathRenderer();
-    let domBallRd = new DOMBallAnimator();
-
-    // Get references to the info display elements
-    const libraryNameElement = document.getElementById('libraryName');
-    const trajectoryIndexElement = document.getElementById('trajectoryIndex');
-    for (let ent in Lib.LIBRARY) {
-        let trajs = Lib.LIBRARY[ent];
-        let index = 0;
-        for (let path of Lib.LoadEntries(trajs, 0.4)) {
-            // Update the display with current library and trajectory index
-            libraryNameElement.textContent = ent;
-            trajectoryIndexElement.textContent = index;
-
-            let na = new NormalAnimation(domPathRd, domBallRd)
-            na.showResult = true;
-            na.stopAtEnd = true;
-
-            na.Configure(path, params)
-            na.Load();
-            await na.Play();
-            if (na.endCode === 'Spacebar') {
-                await new Promise(resolve => setTimeout(resolve, 900));
-            }
-
-            index++;
-        }
+    import {TrainLoader} from "./DataLoader.js";
+    window.onload = () => {
+        let tl = new TrainLoader();
+        tl.setInstruction("instruct_welcome");
     }
 </script>
 </body>
