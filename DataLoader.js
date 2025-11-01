@@ -1,6 +1,8 @@
 import * as Lib from "./TrajLibrary.js"
+import * as Path from "./Path.js"
 import {DOMBallAnimator} from "./DOMBall.js";
 import {DOMPathRenderer} from "./DOMPath.js";
+import {NormalAnimation} from "./NormalAnimator.js";
 
 export function ShuffleArray(arr) {
     let resArr = [];
@@ -28,27 +30,10 @@ export class TrainLoader {
         this._ballHandler = new DOMBallAnimator();
         this._instrPopup = document.getElementById('instructionsBox');
         this._instrDoc = document.getElementById('instructionTexts').contentDocument;
+        this.setInstruction();
 
         // TODO separate testing trajectories
         this._trajectories = [...Lib.MED_S1.LoadEntries()].splice(3);
-    }
-
-    async waitForSpace() {
-        let rmCb;
-        let resolveFn;
-        let ret = new Promise(res => ()=>{resolveFn = res;})
-        let cb = (e) => {
-            if (e.charCode === 0) {
-                resolveFn();
-                rmCb();
-            }
-        }
-
-        document.addEventListener('keydown', cb);
-        rmCb = () => {
-            document.removeEventListener('keydown', cb);
-        }
-        return ret;
     }
 
     setInstruction(id) {
@@ -72,7 +57,66 @@ export class TrainLoader {
         this._instrPopup.classList.remove('hidden');
     }
 
-    _runNormal(tries) {
+    async _runNormal(tries) {
+        this.setInstruction("instruct_welcome");
+        await waitForSpace();
 
+        let anim = new NormalAnimation(this._pathHandler, this._ballHandler);
+        let path = this._trajectories[0];
+        let mask = calcHalfMask(path);
+        anim.Configure(path, mask);
+        anim.showResult = true;
+        anim.Load();
+
+        this.setInstruction("instruct_normal_waiting");
+        await waitForSpace();
+        this.setInstruction("instruct_normal_running");
+        await anim.Play();
+
+        this.setInstruction("instruct_normal_inspect");
+        await waitForSpace();
+
+        this.setInstruction("instruct_normal_repeat");
+        for (let i = 1; i < this._trajectories.length; i++) {
+            path = this._trajectories[i];
+            anim = new NormalAnimation(this._pathHandler, this._ballHandler);
+            mask = calcHalfMask(path);
+            anim.Configure(path, mask);
+            anim.showResult = true;
+            anim.Load();
+
+            await anim.Play();
+            await new Promise(res => setTimeout(res, 900));
+        }
+
+    }
+}
+
+export async function waitForSpace() {
+    let rmCb;
+    let resolveFn;
+    let ret = new Promise(res => {resolveFn = res;})
+    let cb = (e) => {
+        if (e.charCode === 0) {
+            console.log("space pressed")
+            resolveFn();
+            rmCb();
+        }
+    }
+
+    document.addEventListener('keydown', cb);
+    rmCb = () => {
+        document.removeEventListener('keydown', cb);
+    }
+    return ret;
+}
+
+function calcHalfMask(path) {
+    let dist = Path.PosToDistance(path, {segment: path.length - 1, position:0})
+    return {
+        countFrom: 0,
+        countTo: -1,
+        distance: dist / 2,
+        invert: false
     }
 }

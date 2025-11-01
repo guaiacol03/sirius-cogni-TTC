@@ -125,7 +125,10 @@ export class NormalAnimation {
 
     _spaceEvent(e) {
         if (e.charCode === 0) {
-            this.endCode = "Spacebar";
+            console.log("animation stop attempt");
+            if (performance.now() - this.startTime > 250) { // prevent early stops
+                this.endCode = "Spacebar";
+            }
         }
     }
     _spaceEventInst;
@@ -172,10 +175,6 @@ export class NormalAnimation {
 
         let initPt = this._animHandler.GetPoint();
         this._ballHandler.Update(initPt);
-    }
-
-    ProxyExec(fn) {
-        fn.bind(this)();
     }
 }
 

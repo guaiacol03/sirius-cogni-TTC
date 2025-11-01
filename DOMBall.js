@@ -6,7 +6,7 @@ export class DOMBallAnimator {
     _midLayer;
     style;
 
-    static #defaultPoint = new Path.Point(0, 0);
+    static #defaultPoint = new Path.Point(350, 200);
     static #defaultStyle = 'floating_ball+10';
 
     constructor() {

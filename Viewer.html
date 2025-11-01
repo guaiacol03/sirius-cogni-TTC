@@ -111,9 +111,9 @@
 
 <script type="module">
     import {TrainLoader} from "./DataLoader.js";
-    window.onload = () => {
+    window.onload = async function() {
         let tl = new TrainLoader();
-        tl.setInstruction("instruct_welcome");
+        await tl._runNormal(1)
     }
 </script>
 </body>
