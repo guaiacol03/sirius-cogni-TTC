@@ -121,20 +121,18 @@ export class NormalAnimation {
 
     Stop() {
         this.endCode = "External";
-        this._termEvent();
     }
 
     _spaceEvent(e) {
         if (e.charCode === 0) {
             this.endCode = "Spacebar";
-            this._termEvent();
         }
     }
     _spaceEventInst;
 
     _termEvent() {
         window.removeEventListener('keydown', this._spaceEventInst);
-
+        console.log('terminated at distance ' + this._animHandler.position.toString());
         if (this.showResult) {
             this._pathHandler.ArrangeLayer(-Infinity);
         }
@@ -142,6 +140,11 @@ export class NormalAnimation {
     }
 
     _advancePlay(time) {
+        if (this.endCode) {
+            this._termEvent();
+            return;
+        }
+
         this._animHandler.AdvanceState(time)
         this._ballHandler.Update(this._animHandler.GetPoint());
 
@@ -153,16 +156,13 @@ export class NormalAnimation {
 
         if (this._animHandler.endTimestamp) {
             this.endCode = "Overshoot";
-        }
-        if (this.stopAtEnd && (this._animHandler.segment >= this.path.length - 1)) {
+        } else if (this.stopAtEnd && (this._animHandler.segment >= this.path.length - 1)) {
             this.endCode = "LastPoint";
-        }
-
-        if (!this.endCode) {
-            window.requestAnimationFrame(this._advancePlay.bind(this));
         } else {
-            this._termEvent();
+            window.requestAnimationFrame(this._advancePlay.bind(this));
+            return;
         }
+        this._termEvent();
     }
 
     Load() {
@@ -185,7 +185,7 @@ function buildToBorder(seg) {
 
     let cX;
     if (dirX >= 0) {
-        let dX = 600 - seg.p2.x;
+        let dX = 700 - seg.p2.x;
         cX = dX / dirX;
     } else {
         let dX = seg.p2.x;

@@ -917,10 +917,10 @@ export const LIBRARY = {
     T: LIBRARY_T,
     H1: LIBRARY_H1,
     H2: LIBRARY_H2,
-    H3: LIBRARY_M1,
-    H4: LIBRARY_M2,
-    H5: LIBRARY_S1,
-    H6: LIBRARY_S2,
+    M1: LIBRARY_M1,
+    M2: LIBRARY_M2,
+    S1: LIBRARY_S1,
+    S2: LIBRARY_S2
 }
 
 export function* LoadEntries(lib, speed) {

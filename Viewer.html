@@ -2,8 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ball Trajectory Visualization</title>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .svg-container {
+            width: 100%;
+            height: calc(100vh - 60px); /* Reserve space for info panel */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+        }
+
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
         .svg_traj {
             stroke: #000000;
             stroke-width: 2;
@@ -47,37 +71,45 @@
             pointer-events: none; */
         }
 
-        svg {
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-        }
-
         .animation-info {
-            margin-top: 20px;
+            height: 60px;
             padding: 10px;
             background-color: #f0f0f0;
             border-radius: 5px;
             font-family: Arial, sans-serif;
             font-size: 16px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .info-label {
             font-weight: bold;
         }
+
+        .info-content {
+            display: flex;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
-<svg viewBox="0 0 600 400" width="600" height="400">
-    <g id="svg_ball_bottom"></g>
-    <g id="svg_ball_middle"></g>
-    <g id="svg_ball_top"></g>
+<div class="svg-container">
+    <svg viewBox="0 0 700 400" preserveAspectRatio="xMidYMid meet">
+        <g id="svg_ball_bottom"></g>
+        <g id="svg_ball_middle"></g>
+        <g id="svg_ball_top"></g>
 
-    <g id="svg_traj"></g>
-</svg>
+        <g id="svg_traj"></g>
+    </svg>
+</div>
 
 <div id="animationInfo" class="animation-info">
-    <span class="info-label">Library:</span> <span id="libraryName">-</span> |
-    <span class="info-label">Trajectory Index:</span> <span id="trajectoryIndex">-</span>
+    <div class="info-content">
+        <div><span class="info-label">Library:</span> <span id="libraryName">-</span></div>
+        <div><span class="info-label">Trajectory Index:</span> <span id="trajectoryIndex">-</span></div>
+    </div>
 </div>
 
 <script type="module">
@@ -90,7 +122,7 @@
     const params = {
         countFrom: 0,
         countTo: -1,
-        distance: 200,
+        distance: 1,
         invert: true
     }
 
@@ -103,7 +135,7 @@
     for (let ent in Lib.LIBRARY) {
         let trajs = Lib.LIBRARY[ent];
         let index = 0;
-        for (let path of Lib.LoadEntries(trajs, 0.1)) {
+        for (let path of Lib.LoadEntries(trajs, 0.4)) {
             // Update the display with current library and trajectory index
             libraryNameElement.textContent = ent;
             trajectoryIndexElement.textContent = index;
@@ -115,8 +147,10 @@
             na.Configure(path, params)
             na.Load();
             await na.Play();
+            if (na.endCode === 'Spacebar') {
+                await new Promise(resolve => setTimeout(resolve, 900));
+            }
 
-            alert(Log.ExportNormalAnimator(na).endDist)
             index++;
         }
     }
