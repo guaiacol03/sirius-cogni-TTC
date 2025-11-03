@@ -2,7 +2,8 @@ import * as Lib from "./TrajLibrary.js"
 import * as Path from "./Path.js"
 import {DOMBallAnimator} from "./DOMBall.js";
 import {DOMPathRenderer} from "./DOMPath.js";
-import {NormalAnimation} from "./NormalAnimator.js";
+import {NormalAnimator} from "./NormalAnimator.js";
+import {BackwardAnimator} from "./BackwardAnimator.js";
 
 export function ShuffleArray(arr) {
     let resArr = [];
@@ -33,7 +34,7 @@ export class TrainLoader {
         this.setInstruction();
 
         // TODO separate testing trajectories
-        this._trajectories = [...Lib.MED_S1.LoadEntries()].splice(3);
+        this._trajectories = [...Lib.MED_S1.LoadEntries()].slice(0, 3);
     }
 
     setInstruction(id) {
@@ -58,10 +59,7 @@ export class TrainLoader {
     }
 
     async _runNormal(tries) {
-        this.setInstruction("instruct_welcome");
-        await waitForSpace();
-
-        let anim = new NormalAnimation(this._pathHandler, this._ballHandler);
+        let anim = new NormalAnimator(this._pathHandler, this._ballHandler);
         let path = this._trajectories[0];
         let mask = calcHalfMask(path);
         anim.Configure(path, mask);
@@ -76,10 +74,10 @@ export class TrainLoader {
         this.setInstruction("instruct_normal_inspect");
         await waitForSpace();
 
-        this.setInstruction("instruct_normal_repeat");
+        this.setInstruction("instruct_repeat");
         for (let i = 1; i < this._trajectories.length; i++) {
             path = this._trajectories[i];
-            anim = new NormalAnimation(this._pathHandler, this._ballHandler);
+            anim = new NormalAnimator(this._pathHandler, this._ballHandler);
             mask = calcHalfMask(path);
             anim.Configure(path, mask);
             anim.showResult = true;
@@ -88,7 +86,87 @@ export class TrainLoader {
             await anim.Play();
             await new Promise(res => setTimeout(res, 900));
         }
+        this.setInstruction("instruct_finished");
+        await waitForSpace();
+    }
 
+    async _runUnmasked() {
+        let anim = new NormalAnimator(this._pathHandler, this._ballHandler);
+        let path = this._trajectories[0];
+        anim.Configure(path, null);
+        anim.Load();
+
+        this.setInstruction("instruct_nomask_waiting");
+        await waitForSpace();
+        this.setInstruction("instruct_nomask_running");
+        await anim.Play();
+
+        this.setInstruction("instruct_nomask_inspect");
+        await waitForSpace();
+
+        this.setInstruction("instruct_repeat");
+        for (let i = 1; i < this._trajectories.length; i++) {
+            path = this._trajectories[i];
+            anim = new NormalAnimator(this._pathHandler, this._ballHandler);
+            anim.Configure(path, null);
+            anim.showResult = true;
+            anim.Load();
+
+            await anim.Play();
+            await new Promise(res => setTimeout(res, 900));
+        }
+        this.setInstruction("instruct_finished");
+        await waitForSpace();
+    }
+
+    async _runBackward() {
+        let anim = new BackwardAnimator(this._pathHandler, this._ballHandler);
+        let path = this._trajectories[0];
+        anim.Configure(path);
+        anim.LoadForward();
+
+        this.setInstruction("instruct_backward_waiting_fwd");
+        await waitForSpace();
+        this.setInstruction("instruct_backward_running_fwd");
+        await anim.PlayForward();
+        this.setInstruction("instruct_backward_inspect_fwd");
+
+        await waitForSpace();
+        anim.LoadBackward();
+        this.setInstruction("instruct_backward_running_bwd");
+        await anim.PlayBackward();
+
+        this.setInstruction("instruct_backward_inspect_bwd");
+        await waitForSpace();
+
+        this.setInstruction("instruct_repeat");
+        for (let i = 1; i < this._trajectories.length; i++) {
+            path = this._trajectories[i];
+            anim = new BackwardAnimator(this._pathHandler, this._ballHandler);
+            anim.Configure(path);
+
+            anim.LoadForward();
+            await anim.PlayForward();
+            await new Promise(res => setTimeout(res, 900));
+
+            anim.LoadBackward();
+            await anim.PlayBackward();
+
+            await new Promise(res => setTimeout(res, 900));
+        }
+        this.setInstruction("instruct_finished");
+        await waitForSpace();
+    }
+
+    async runAll() {
+        this.setInstruction("instruct_welcome");
+        await waitForSpace();
+
+        await this._runUnmasked();
+
+        await this._runNormal();
+
+        await this._runBackward();
     }
 }
 

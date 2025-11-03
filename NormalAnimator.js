@@ -2,7 +2,7 @@ import * as DOM from "./DOMPath.js"
 import * as Path from "./Path.js"
 import * as Anim from "./PathAnimation.js"
 
-export class NormalAnimation {
+export class NormalAnimator {
     srcPath;
     path;
     showResult;
@@ -70,7 +70,17 @@ export class NormalAnimation {
         }
 
         this.srcPath = path;
-        let slicePath = sliceByMask(path, params);
+        let slicePath;
+        let lastHidden = true;
+        if (params) {
+            slicePath = sliceByMask(path, params);
+        } else {
+            slicePath = {
+                beforePath: [],
+                afterPath: path
+            };
+            lastHidden = false;
+        }
 
         let beforePts = simpleTrajSplit(slicePath.beforePath);
 
@@ -80,22 +90,23 @@ export class NormalAnimation {
 
         let afterPts = simpleTrajSplit(slicePath.afterPath);
 
-        convBP = simpleConvert(afterPts.p1, true, false)
-        convAP = simpleConvert(afterPts.p2, true, false)
+        convBP = simpleConvert(afterPts.p1, lastHidden, false)
+        convAP = simpleConvert(afterPts.p2, lastHidden, false)
         { // mark last point
             let lp = convAP[convAP.length - 1];
-            let nlp = DOM.SchedPoint.withStyle(lp, styles.target, styles.point_masked);
+            let nlp = DOM.SchedPoint.withStyle(lp, styles.target,
+                lastHidden ? styles.point_masked : null);
             convAP[convAP.length - 1] = nlp;
         }
-        let convAfter = simpleTrajMerge(convBP, convAP, slicePath.afterPath, true, true);
+        let convAfter = simpleTrajMerge(convBP, convAP, slicePath.afterPath, lastHidden, true);
 
         { // add final extension
             let lSeg = slicePath.afterPath[slicePath.afterPath.length - 1];
             let finSeg = buildToBorder(lSeg);
 
-            let convP = simpleConvert([finSeg.p1, finSeg.p2], true, false)
+            let convP = simpleConvert([finSeg.p1, finSeg.p2], lastHidden, false)
             let convSeg = simpleTrajMerge([convP[0]], [convP[1]], [lSeg],
-                true, false);
+                lastHidden, false);
             convAfter = convAfter.concat(convSeg);
         }
 

@@ -9,11 +9,11 @@
     </div>
 
     <div id="instruct_normal_waiting" class="service">
-        Перед вами - первый тип задач<br>
-        Зеленый шарик будет двигаться по траектории к черной точке на конце, и в какой-то
-        момент скроется из виду, но продолжит движение<br>
+        Перед вами - другой тип задач<br>
+        Зеленый шарик будет так же двигаться по траектории, но в какой-то
+        момент скроется из виду (при этом продолжит движение)<br>
         Ваша задача - остановить его нажатием пробела тогда, когда, по-вашему, он достигнет конца пути
-        (но не дальше)<br>
+        <br>
         <p style="color: grey; font-family: cursive;">
             Нажмите пробел для запуска анимации
         </p>
@@ -33,13 +33,86 @@
         </p>
     </div>
 
-    <div id="instruct_normal_repeat" class="service">
+    <div id="instruct_starting" class="service">
+        Now, a real test will start
+    </div>
+
+    <div id="instruct_nomask_waiting" class="service">
+        Перед вами - первый тип задач<br>
+        На экране черной линией очерчена траектория. Черная точка - ее конец.<br>
+        Зеленый шарик будет двигаться по траектории к черной точке, но может перелететь за нее.<br>
+        Ваша задача - нажать пробел как можно скорее тогда, когда шарик будет на черной точке
+        (это остановит шарик)<br>
+        <p style="color: grey; font-family: cursive;">
+            Нажмите пробел, когда будете готовы
+        </p>
+    </div>
+
+    <div id="instruct_nomask_inspect" class="service">
+        Шарик остановился, результат был записан - попытка завершена
+        <p style="color: grey; font-family: cursive;">
+            Нажмите пробел, чтобы перейти дальше
+        </p>
+    </div>
+
+    <div id="instruct_nomask_running" class="service">
+        Сейчас шарик едет к черной точке на конце линии
+        <p style="color: grey; font-family: cursive;">
+            Нажмите пробел, когда он будет на ней
+        </p>
+    </div>
+
+    <div id="instruct_backward_waiting_fwd" class="service">
+        Перед вами - третий тип задач. В нем вам предстоит отмерять движение шарика по памяти.<br>
+        Вначале анимация движения шарика покажется полностью, без окклюдера<br>
+        Останавливать его <b>не</b> нужно<br>
+        <p style="color: grey; font-family: cursive;">
+            Нажмите пробел, когда будете готовы
+        </p>
+    </div>
+
+    <div id="instruct_backward_running_fwd" class="service">
+        Сейчас шарик движется к конечной точке.<br>
+        Запомните его скорость и то, сколько времени это займет
+    </div>
+
+    <div id="instruct_backward_inspect_fwd" class="service">
+        Шарик доехал до конца и остановился.<br>
+        Дальше шарик поедет тем же путем в обратную сторону. Ваша задача - остановить его пробелом,
+        когда он доедет до начальной точки (теперь обозначена черным кругом).<br>
+        Шарик сейчас не виден и <b>не</b> будет виден на протяжении уровня.
+        <p style="color: grey; font-family: cursive;">
+            Нажмите пробел, когда будете готовы.<br>
+            В тесте это будет происходить автоматически через секунду
+        </p>
+    </div>
+
+    <div id="instruct_backward_running_bwd" class="service">
+        Шарик (невидимый) едет по траектории назад<br>
+        Остановите его пробелом, когда он достигнет начальной точки
+        <p style="color: grey; font-family: cursive;">
+            Нажмите пробел, когда шарик должен прийти в начало пути
+        </p>
+    </div>
+
+    <div id="instruct_backward_inspect_bwd" class="service">
+        Анимация остановлена, результат записан
+        <p style="color: grey; font-family: cursive;">
+            Нажмите пробел, чтобы перейти дальше
+        </p>
+    </div>
+
+    <div id="instruct_repeat" class="service">
         <p style="color: grey; font-family: cursive;">
             Повторите тест несколько раз
         </p>
     </div>
 
-    <div id="instruct_starting" class="service">
-        Now, a real test will start
+    <div id="instruct_finished" class="service">
+        Тренировка завершена<br>
+        Если у вас остались вопросы по прохождению уровня, обратитесь к ассессору
+        <p style="color: grey; font-family: cursive;">
+            Нажмите, чтобы продолжить
+        </p>
     </div>
 </body>
