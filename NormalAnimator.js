@@ -8,6 +8,7 @@ export class NormalAnimator {
     showResult;
     stopAtEnd;
     endCode;
+    advanceCB = () => {}
     _pathHandler;
     _ballHandler;
     _animHandler;
@@ -17,6 +18,7 @@ export class NormalAnimator {
         this._ballHandler = ballHandler;
     }
 
+    _sliceLengths;
     Configure(path, params) {
         const styles = {
             traj: 'svg_traj',
@@ -81,6 +83,10 @@ export class NormalAnimator {
             };
             lastHidden = false;
         }
+        this._sliceLengths = {
+            beforePath: slicePath.beforePath.length,
+            afterPath: slicePath.afterPath.length,
+        }
 
         let beforePts = simpleTrajSplit(slicePath.beforePath);
 
@@ -116,8 +122,9 @@ export class NormalAnimator {
     startTime;
     _lastLevel
     _resolveFn
+
     Play() {
-        this._lastLevel = this._animHandler.segment;
+        this._lastLevel = -1;
         let prom = new Promise((res) => { this._resolveFn = res; });
         this._spaceEventInst = this._spaceEvent.bind(this);
 
@@ -144,7 +151,7 @@ export class NormalAnimator {
     }
     _spaceEventInst;
 
-    _termEvent() {
+    _termEvent(time) {
         window.removeEventListener('keydown', this._spaceEventInst);
         console.log('terminated at distance ' + this._animHandler.position.toString());
         if (this.showResult) {
@@ -155,11 +162,12 @@ export class NormalAnimator {
 
     _advancePlay(time) {
         if (this.endCode) {
-            this._termEvent();
+            this._termEvent(time);
             return;
         }
 
         this._animHandler.AdvanceState(time)
+        this.advanceCB(time);
         this._ballHandler.Update(this._animHandler.GetPoint());
 
         let seg = this._animHandler.segment;
@@ -176,7 +184,7 @@ export class NormalAnimator {
             window.requestAnimationFrame(this._advancePlay.bind(this));
             return;
         }
-        this._termEvent();
+        this._termEvent(time);
     }
 
     Load() {

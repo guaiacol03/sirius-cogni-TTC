@@ -31,7 +31,8 @@ export class PathAnimState extends Path.PathPos {
             } else {
                 // end animation
                 this.position += remainsInSegment;
-                this.endTimestamp = time;
+                this.lastTimetamp = time;
+                this.endTimestamp = this.lastTimetamp;
             }
         } else {
             // advance within segment

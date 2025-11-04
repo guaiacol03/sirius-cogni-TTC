@@ -18,6 +18,31 @@ export function ShuffleArray(arr) {
     return resArr;
 }
 
+export class TrialPlayer {
+    _ballHandler;
+    _pathHandler;
+    _blockBanner;
+
+    async runUnmasked(traj) {
+        let logger = {};
+        logger["initTime"] = performance.now(); // request sent
+
+        let anim = new NormalAnimator(this._pathHandler, this._ballHandler);
+        anim.Configure(traj, null);
+        anim.Load();
+        logger["renderTime"] = performance.now(); // trajectory visible to user
+
+        await anim.Play()
+    }
+
+    constructor() {
+        this._pathHandler = new DOMPathRenderer();
+        this._pathHandler.Update();
+        this._ballHandler = new DOMBallAnimator();
+        this._blockBanner = document.getElementById('svg_banner');
+    }
+}
+
 export class TrainLoader {
     _ballHandler;
     _pathHandler;
@@ -98,6 +123,9 @@ export class TrainLoader {
         let path = this._trajectories[0];
         anim.Configure(path, null);
         anim.Load();
+        anim.advanceCB = (type, time, meta, self) => {
+            console.log(type)
+        }
 
         this.setInstruction("instruct_nomask_waiting");
         await waitForSpace();
@@ -167,7 +195,7 @@ export class TrainLoader {
         this.setInstruction("instruct_welcome");
         await waitForSpace();
 
-        await this._runUnmasked();
+        //await this._runUnmasked();
 
         await this._runNormal();
 

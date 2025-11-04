@@ -132,10 +132,20 @@
 <iframe src="./Instructions.html" id="instructionTexts" height="0" width="0"></iframe>
 
 <script type="module">
-    import {TrainLoader} from "./DataLoader.js";
+    import {UnmaskedLauncher} from "./LogExtractor.js";
+    import {DOMBallAnimator} from "./DOMBall.js";
+    import {DOMPathRenderer} from "./DOMPath.js";
+    import * as Lib from "./TrajLibrary.js";
+
+    let pathHandler = new DOMPathRenderer();
+    pathHandler.Update();
+    let ballHandler = new DOMBallAnimator();
+    let trajs  = [...Lib.MED_S1.LoadEntries()].slice(0, 3);
+
     window.onload = async function() {
-        let tl = new TrainLoader();
-        await tl.runAll();
+        let tl = new UnmaskedLauncher(trajs[0], pathHandler, ballHandler);
+        await tl.Run();
+        console.log(tl.journal)
     }
 </script>
 </body>
