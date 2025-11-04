@@ -24,6 +24,7 @@ export class TrainLoader {
     _trajectories;
     _instrPopup;
     _instrDoc;
+    _blockBanner;
 
     constructor() {
         this._pathHandler = new DOMPathRenderer();
@@ -31,6 +32,7 @@ export class TrainLoader {
         this._ballHandler = new DOMBallAnimator();
         this._instrPopup = document.getElementById('instructionsBox');
         this._instrDoc = document.getElementById('instructionTexts').contentDocument;
+        this._blockBanner = document.getElementById('svg_banner');
         this.setInstruction();
 
         // TODO separate testing trajectories
@@ -85,6 +87,7 @@ export class TrainLoader {
 
             await anim.Play();
             await new Promise(res => setTimeout(res, 900));
+            await this.waitWithBanner();
         }
         this.setInstruction("instruct_finished");
         await waitForSpace();
@@ -114,6 +117,7 @@ export class TrainLoader {
 
             await anim.Play();
             await new Promise(res => setTimeout(res, 900));
+            await this.waitWithBanner();
         }
         this.setInstruction("instruct_finished");
         await waitForSpace();
@@ -153,6 +157,7 @@ export class TrainLoader {
             await anim.PlayBackward();
 
             await new Promise(res => setTimeout(res, 900));
+            await this.waitWithBanner();
         }
         this.setInstruction("instruct_finished");
         await waitForSpace();
@@ -167,6 +172,12 @@ export class TrainLoader {
         await this._runNormal();
 
         await this._runBackward();
+    }
+
+    async waitWithBanner() {
+        this._blockBanner.classList.remove('hidden');
+        await waitForSpace();
+        this._blockBanner.classList.add('hidden');
     }
 }
 
