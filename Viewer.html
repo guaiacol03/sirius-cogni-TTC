@@ -132,10 +132,10 @@
 <iframe src="./Instructions.html" id="instructionTexts" height="0" width="0"></iframe>
 
 <script type="module">
-    import {UnmaskedLauncher} from "./LogExtractor.js";
     import {DOMBallAnimator} from "./DOMBall.js";
     import {DOMPathRenderer} from "./DOMPath.js";
     import * as Lib from "./TrajLibrary.js";
+    import {UnmaskedLauncher, NormalLauncher, BackwardLauncher} from "./LoggedLaunchers.js";
 
     let pathHandler = new DOMPathRenderer();
     pathHandler.Update();
@@ -143,7 +143,7 @@
     let trajs  = [...Lib.MED_S1.LoadEntries()].slice(0, 3);
 
     window.onload = async function() {
-        let tl = new UnmaskedLauncher(trajs[0], pathHandler, ballHandler);
+        let tl = new BackwardLauncher(trajs[0], pathHandler, ballHandler);
         await tl.Run();
         console.log(tl.journal)
     }

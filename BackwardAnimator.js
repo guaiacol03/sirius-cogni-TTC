@@ -2,6 +2,9 @@ import {NormalAnimator} from "./NormalAnimator.js";
 import * as Anim from "./PathAnimation.js";
 import * as Path from "./Path.js";
 
+// TODO should be removed, but needs discussion as tutorial
+// Do not use in real tests
+
 export class BackwardAnimator extends NormalAnimator {
     SRealBall;
     SSrcPath;

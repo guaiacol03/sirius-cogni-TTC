@@ -124,6 +124,8 @@ export class NormalAnimator {
     _resolveFn
 
     Play() {
+        // TODO replace with "this._animHandler.segment"
+        // for debug only, messes up arrays
         this._lastLevel = -1;
         let prom = new Promise((res) => { this._resolveFn = res; });
         this._spaceEventInst = this._spaceEvent.bind(this);
