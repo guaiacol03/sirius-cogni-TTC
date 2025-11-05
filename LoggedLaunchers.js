@@ -46,8 +46,7 @@ export class UnmaskedLauncher {
         // endCode === "LastPoint" should never occur
         if (this.player.endCode === "Spacebar") {
             // path is always elongated with a final segment, even if player stops at target point
-            let totalDist = Path.PosToDistance(this.player.srcPath,
-                {segment: this.player.srcPath.length - 1, position: 0});
+            let totalDist = Path.TotalDistance(this.player.srcPath);
             let userDist = Path.PosToDistance(this.player.path, this.player._animHandler);
 
             this.journal["overshoot"] = userDist - totalDist;
@@ -97,7 +96,7 @@ export class NormalLauncher {
 }
 
 export function calcHalfMask(path) {
-    let dist = Path.PosToDistance(path, {segment: path.length - 1, position:0})
+    let dist = Path.TotalDistance(path)
     return {
         countFrom: 0,
         countTo: -1,

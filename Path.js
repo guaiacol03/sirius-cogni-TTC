@@ -131,6 +131,13 @@ export function PosToDistance(path, pos) {
     return distance;
 }
 
+export function TotalDistance(path) {
+    return PosToDistance(path, {
+        segment: path.length,
+        position: 0
+    })
+}
+
 export function GetPathPoint(path, pos) {
     let curSegment = path[pos.segment];
 
