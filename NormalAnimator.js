@@ -139,6 +139,16 @@ export class NormalAnimator {
         return prom;
     }
 
+    PlayFull() {
+        let prom = new Promise((res) => { this._resolveFn = res; });
+
+        window.requestAnimationFrame((time) => {
+            this._animHandler.Start(time);
+            this._advancePlay(time);
+        });
+        return prom;
+    }
+
     Stop() {
         this.endCode = "External";
     }

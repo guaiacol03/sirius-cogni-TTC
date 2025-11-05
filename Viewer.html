@@ -88,6 +88,12 @@
             display: none;
         }
 
+        .svg_fixation {
+            fill: #ff0000;
+            stroke: #006600;
+            stroke-width: 2;
+        }
+
         /* TODO written by chatgpt, inspect */
         .svg-banner {
             position: absolute;
@@ -117,11 +123,12 @@
 <div id="instructionsBox" class="instructions-box hidden"><!-- This won't be visible --></div>
 
 <div class="svg-container">
-    <svg viewBox="0 0 700 400" preserveAspectRatio="xMidYMid meet">
+    <svg id="animation_svg" viewBox="0 0 700 400" preserveAspectRatio="xMidYMid meet">
         <g id="svg_ball_bottom"></g>
         <g id="svg_ball_middle"></g>
         <g id="svg_ball_top"></g>
         <g id="svg_traj"></g>
+        <circle id="svg-fixation" class="svg_point_hidden" cx="350" cy="200" r="10"></circle>
     </svg>
 
     <div id="svg_banner" class="svg-banner hidden">
@@ -132,20 +139,15 @@
 <iframe src="./Instructions.html" id="instructionTexts" height="0" width="0"></iframe>
 
 <script type="module">
-    import {DOMBallAnimator} from "./DOMBall.js";
-    import {DOMPathRenderer} from "./DOMPath.js";
-    import * as Lib from "./TrajLibrary.js";
-    import {UnmaskedLauncher, NormalLauncher, BackwardLauncher} from "./LoggedLaunchers.js";
-
-    let pathHandler = new DOMPathRenderer();
-    pathHandler.Update();
-    let ballHandler = new DOMBallAnimator();
-    let trajs  = [...Lib.MED_S1.LoadEntries()].slice(0, 3);
+    import {RandomRunner} from "./RandomRunner.js";
+    import {TrainLauncher} from "./TrainLaunchers.js";
 
     window.onload = async function() {
-        let tl = new BackwardLauncher(trajs[0], pathHandler, ballHandler);
-        await tl.Run();
-        console.log(tl.journal)
+        //let tl = new TrainLauncher();
+        //await tl.runAll()
+
+        let rr = new RandomRunner();
+        await rr.Run()
     }
 </script>
 </body>

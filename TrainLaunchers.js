@@ -19,7 +19,8 @@ export function ShuffleArray(arr) {
     return resArr;
 }
 
-export class TrainLoader {
+// launcher only for training runs - they are not logged
+export class TrainLauncher {
     _ballHandler;
     _pathHandler;
     _trajectories;
@@ -91,7 +92,7 @@ export class TrainLoader {
             await this.waitWithBanner();
         }
         this.setInstruction("instruct_finished");
-        await waitForSpace();
+        await this.waitWithBanner();
     }
 
     async _runUnmasked() {
@@ -121,7 +122,7 @@ export class TrainLoader {
             await this.waitWithBanner();
         }
         this.setInstruction("instruct_finished");
-        await waitForSpace();
+        await this.waitWithBanner();
     }
 
     async _runBackward() {
@@ -161,7 +162,7 @@ export class TrainLoader {
             await this.waitWithBanner();
         }
         this.setInstruction("instruct_finished");
-        await waitForSpace();
+        await this.waitWithBanner();
     }
 
     async runAll() {
