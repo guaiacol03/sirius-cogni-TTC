@@ -6,13 +6,12 @@ export class UnmaskedLauncher {
         passSegments: []
     };
     _fixPoint;
+    testId = 0;
     player;
 
-    constructor(path, pRender, bRender, fRender) {
-        this.Run = UnmaskedLauncher._run.bind(this);
-
-        this._fixPoint = fRender;
-        this.player = new NormalAnimator(pRender, bRender);
+    constructor(path, meta) {
+        this._fixPoint = meta.fixHandler;
+        this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
         this.player.Configure(path, null);
         this.player.stopAtEnd = false;
         this.player.showResult = false;
@@ -26,13 +25,18 @@ export class UnmaskedLauncher {
         }
     }
 
+    async Run() {
+        await UnmaskedLauncher._run.apply(this);
+        await new Promise(resolve => setTimeout(resolve, 900));
+    }
+
     static async _run() {
         // erase everything
-        this.player._ballHandler.style = "svg_point_hidden";
+        this.player._ballHandler.style = "svg_point_hidden+1";
         this.player._ballHandler.Update(null);
         this.player._pathHandler.Update(null)
 
-        this._fixPoint.Update(true)
+        this._fixPoint.Update(this.testId)
         await new Promise(resolve => setTimeout(resolve, 900));
 
         this.player._ballHandler.style = "floating_ball+10";
@@ -55,7 +59,6 @@ export class UnmaskedLauncher {
             // !! when path ends naturally, overshoot is counted towards position of the same segment
             this.journal["overshoot"] = this.player._animHandler.position;
         }
-        await new Promise(resolve => setTimeout(resolve, 900));
     }
 }
 
@@ -64,13 +67,14 @@ export class NormalLauncher {
         passSegments: []
     };
     player;
+    testId = 1;
     _fixPoint;
 
-    constructor(path, pRender, bRender, fRender) {
+    constructor(path, meta) {
         this.Run = UnmaskedLauncher._run.bind(this);
 
-        this._fixPoint = fRender;
-        this.player = new NormalAnimator(pRender, bRender);
+        this._fixPoint = meta.fixHandler;
+        this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
         let cMsk = calcHalfMask(path);
         this.player.Configure(path, cMsk);
         this.player.stopAtEnd = false;
@@ -111,19 +115,19 @@ export class BackwardLauncher {
     timeSpan = null;
     _fixPoint;
 
-    constructor(path, pRender, bRender, fRender) {
-        this._fixPoint = fRender;
-        this.player = new NormalAnimator(pRender, bRender);
+    constructor(path, meta) {
+        this._fixPoint = meta.fixHandler;
+        this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
         this.player.Configure(path, null);
         this.player.stopAtEnd = true;
     }
 
     async Run() {
-        this.player._ballHandler.style = "svg_point_hidden";
+        this.player._ballHandler.style = "svg_point_hidden+1";
         this.player._ballHandler.Update(null);
         this.player._pathHandler.Update(null)
 
-        this._fixPoint.Update(true)
+        this._fixPoint.Update(2)
         await new Promise(resolve => setTimeout(resolve, 900));
 
         this.player._ballHandler.style = "floating_ball+10";
@@ -142,7 +146,7 @@ export class BackwardLauncher {
         rPlayer.Configure(rPath, null);
         this.player._ballHandler.style = "svg_point_hidden";
         rPlayer.Load()
-
+        this._fixPoint.Update(3)
 
         let currTime = performance.now();
         await waitForSpace();

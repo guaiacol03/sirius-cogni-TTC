@@ -24,26 +24,17 @@ export class RandomRunner {
                 let type = Math.round(Math.random() * 2)
                 console.log(type);
                 if (type === 0) {
-                    let t = new Launcher.UnmaskedLauncher(trajs[i],
-                        this.pathHandler,
-                        this.ballHandler,
-                        this.fixHandler);
+                    let t = new Launcher.UnmaskedLauncher(trajs[i], this);
                     await t.Run();
                     console.log(t.journal)
                     await this.bannerHandler.waitWithBanner();
                 } else if (type === 1) {
-                    let t = new Launcher.NormalLauncher(trajs[i],
-                        this.pathHandler,
-                        this.ballHandler,
-                        this.fixHandler);
+                    let t = new Launcher.NormalLauncher(trajs[i], this);
                     await t.Run();
                     console.log(t.journal)
                     await this.bannerHandler.waitWithBanner();
                 } else {
-                    let t = new Launcher.BackwardLauncher(trajs[i],
-                        this.pathHandler,
-                        this.ballHandler,
-                        this.fixHandler);
+                    let t = new Launcher.BackwardLauncher(trajs[i], this);
                     await t.Run();
                     console.log(t.journal)
                     await this.bannerHandler.waitWithBanner();

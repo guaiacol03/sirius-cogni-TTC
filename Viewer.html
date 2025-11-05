@@ -88,12 +88,6 @@
             display: none;
         }
 
-        .svg_fixation {
-            fill: #ff0000;
-            stroke: #006600;
-            stroke-width: 2;
-        }
-
         /* TODO written by chatgpt, inspect */
         .svg-banner {
             position: absolute;
@@ -116,6 +110,12 @@
             opacity: 0;
             pointer-events: none;
         }
+
+        .svg_fixation_pt {
+            fill: #ff0000;
+            stroke: #006600;
+            stroke-width: 2;
+        }
     </style>
 </head>
 <body>
@@ -128,7 +128,28 @@
         <g id="svg_ball_middle"></g>
         <g id="svg_ball_top"></g>
         <g id="svg_traj"></g>
-        <circle id="svg-fixation" class="svg_point_hidden" cx="350" cy="200" r="10"></circle>
+
+        <g id="svg_fixation_circle">
+            <circle class="svg_fixation_pt" cx="350" cy="200" r="10"></circle>
+        </g>
+        <g id="svg_fixation_rect">
+            <g transform="translate(350,200)">
+                <rect x="-10" y="-10" width="20" height="20" class="svg_fixation_pt" />
+            </g>
+        </g>
+        <g id="svg_fixation_rhomb">
+            <g transform="translate(350,200) rotate(45)">
+                <rect x="-10" y="-10" width="20" height="20" class="svg_fixation_pt" />
+            </g>
+        </g>
+        <g id="svg_fixation_cross">
+            <g transform="translate(350,200)">
+                <line x1="-10" x2="10" y1="0" y2="0" class="svg_fixation_pt" />
+                <line x1="0" x2="0" y1="-10" y2="10" class="svg_fixation_pt" />
+            </g>
+        </g>
+
+
     </svg>
 
     <div id="svg_banner" class="svg-banner hidden">

@@ -15,16 +15,27 @@ export class DOMBannerHandler {
 }
 
 export class DOMFixationHandler {
-    _DOMPoint
+    _groupArray= [];
+
     constructor() {
-        this._DOMPoint = document.getElementById('svg-fixation');
+        let elem = document.querySelector("svg g#svg_fixation_circle")
+        this._groupArray.push(elem);
+        elem = document.querySelector("svg g#svg_fixation_rect")
+        this._groupArray.push(elem);
+        elem = document.querySelector("svg g#svg_fixation_rhomb")
+        this._groupArray.push(elem);
+        elem = document.querySelector("svg g#svg_fixation_cross")
+        this._groupArray.push(elem);
+
+        this.Update();
     }
 
-    Update(shown) {
-        if (shown) {
-            this._DOMPoint.setAttribute("class", "svg_fixation");
-        } else {
-            this._DOMPoint.setAttribute("class", "svg_point_hidden");
+    Update(id) {
+        this._groupArray.forEach((group) => {
+            group.setAttribute("visibility", "hidden");
+        })
+        if (id != null) {
+            this._groupArray[id].setAttribute("visibility", "visible");
         }
     }
 }
