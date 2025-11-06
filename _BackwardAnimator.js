@@ -5,7 +5,7 @@ import * as Path from "./Path.js";
 // TODO should be removed, but needs discussion as tutorial
 // Do not use in real tests
 
-export class BackwardAnimator extends NormalAnimator {
+export class _BackwardAnimator extends NormalAnimator {
     SRealBall;
     SSrcPath;
 

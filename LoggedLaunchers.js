@@ -6,7 +6,6 @@ export class UnmaskedLauncher {
         passSegments: []
     };
     _fixPoint;
-    testId = 0;
     player;
 
     constructor(path, meta) {
@@ -26,17 +25,17 @@ export class UnmaskedLauncher {
     }
 
     async Run() {
-        await UnmaskedLauncher._run.apply(this);
+        await UnmaskedLauncher._run.apply(this, [0]);
         await new Promise(resolve => setTimeout(resolve, 900));
     }
 
-    static async _run() {
+    static async _run(testId) {
         // erase everything
         this.player._ballHandler.style = "svg_point_hidden+1";
         this.player._ballHandler.Update(null);
         this.player._pathHandler.Update(null)
 
-        this._fixPoint.Update(this.testId)
+        this._fixPoint.Update(testId)
         await new Promise(resolve => setTimeout(resolve, 900));
 
         this.player._ballHandler.style = "floating_ball+10";
@@ -71,8 +70,6 @@ export class NormalLauncher {
     _fixPoint;
 
     constructor(path, meta) {
-        this.Run = UnmaskedLauncher._run.bind(this);
-
         this._fixPoint = meta.fixHandler;
         this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
         let cMsk = calcHalfMask(path);
@@ -80,6 +77,10 @@ export class NormalLauncher {
         this.player.stopAtEnd = false;
 
         this.player.advanceCB = this.loggerCallback.bind(this);
+    }
+
+    async Run() {
+        await UnmaskedLauncher._run.apply(this, [1]);
     }
 
     loggerCallback(time) {

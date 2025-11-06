@@ -3,21 +3,10 @@ import * as Path from "./Path.js"
 import {DOMBallAnimator} from "./DOMBall.js";
 import {DOMPathRenderer} from "./DOMPath.js";
 import {NormalAnimator} from "./NormalAnimator.js";
-import {BackwardAnimator} from "./BackwardAnimator.js";
+import {_BackwardAnimator} from "./_BackwardAnimator.js";
 import {calcHalfMask, waitForSpace} from "./LoggedLaunchers.js";
+import {ShuffleArray} from "./RandomRunner.js"
 
-export function ShuffleArray(arr) {
-    let resArr = [];
-    let srcArr = arr.slice();
-
-    while (srcArr.length > 0) {
-        let rPos = Math.round(Math.random() * (srcArr.length - 1))
-        resArr.push(srcArr[rPos]);
-        srcArr.splice(rPos, 1)
-    }
-
-    return resArr;
-}
 
 // launcher only for training runs - they are not logged
 export class TrainLauncher {
@@ -126,7 +115,7 @@ export class TrainLauncher {
     }
 
     async _runBackward() {
-        let anim = new BackwardAnimator(this._pathHandler, this._ballHandler);
+        let anim = new _BackwardAnimator(this._pathHandler, this._ballHandler);
         let path = this._trajectories[0];
         anim.Configure(path);
         anim.LoadForward();
@@ -148,7 +137,7 @@ export class TrainLauncher {
         this.setInstruction("instruct_repeat");
         for (let i = 1; i < this._trajectories.length; i++) {
             path = this._trajectories[i];
-            anim = new BackwardAnimator(this._pathHandler, this._ballHandler);
+            anim = new _BackwardAnimator(this._pathHandler, this._ballHandler);
             anim.Configure(path);
 
             anim.LoadForward();

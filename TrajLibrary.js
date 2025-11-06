@@ -1,8 +1,9 @@
 import {Point, Segment} from "./Path.js"
 
 class LibraryEntry{
-    constructor(ent, speed){
+    constructor(name, ent, speed){
         this.entries = ent;
+        this.name = name;
         this.speed = speed;
     }
 
@@ -25,7 +26,7 @@ class LibraryEntry{
 const speed_s1 = 0.2;
 const speed_s2 = 0.4;
 
-export const TEST = new LibraryEntry([
+export const TEST = new LibraryEntry("test", [
         [
             {x: 100, y: 100},
             {x: 200, y: 100},
@@ -40,7 +41,7 @@ export const TEST = new LibraryEntry([
         ]
     ], 0.1)
 
-export const LONG_S1 = new LibraryEntry([
+export const LONG_S1 = new LibraryEntry("long_s1", [
     [
         { x: 508, y: 146 },
         { x: 568, y: 235 },
@@ -258,7 +259,7 @@ export const LONG_S1 = new LibraryEntry([
     ],
 ], speed_s1);
 
-export const LONG_S2 = new LibraryEntry([
+export const LONG_S2 = new LibraryEntry("long_s2", [
     [
         { x: 230, y: 107 },
         { x: 396, y: 99 },
@@ -476,7 +477,7 @@ export const LONG_S2 = new LibraryEntry([
     ],
 ], speed_s2)
 
-export const MED_S1 =  new LibraryEntry([
+export const MED_S1 =  new LibraryEntry("med_s1", [
     [
         { x: 195, y: 239 },
         { x: 257, y: 290 },
@@ -634,7 +635,7 @@ export const MED_S1 =  new LibraryEntry([
     ],
 ], speed_s1);
 
-export const MED_S2 = new LibraryEntry([
+export const MED_S2 = new LibraryEntry("med_s2", [
     [
         { x: 289, y: 119 },
         { x: 414, y: 127 },
@@ -780,13 +781,13 @@ export const MED_S2 = new LibraryEntry([
     ],
 ], speed_s2);
 
-export const SHORT_S1 = new LibraryEntry([
+export const SHORT_S1 = new LibraryEntry("short_s1", [
     [
         { x: 425, y: 267 },
         { x: 480, y: 291 },
         { x: 511, y: 269 },
         { x: 549, y: 256 },
-        { x: 594, y: 214 },
+        { x: 594, y: 214 }
     ],
 
     [
@@ -870,7 +871,7 @@ export const SHORT_S1 = new LibraryEntry([
     ],
 ], speed_s1)
 
-export const SHORT_S2 = new LibraryEntry([
+export const SHORT_S2 = new LibraryEntry("short_s2", [
     [
         { x: 116, y: 296 },
         { x: 180, y: 219 },
@@ -960,4 +961,12 @@ export const SHORT_S2 = new LibraryEntry([
     ],
 ], speed_s2);
 
+export const ENTRY_LIST = [
+    LONG_S1,
+    LONG_S2,
+    MED_S1,
+    MED_S2,
+    SHORT_S1,
+    SHORT_S2
+]
 // 3 раза из каждой
