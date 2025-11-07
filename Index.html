@@ -166,8 +166,7 @@
     window.onload = async function() {
         // TODO add space presses to log
         let rr = new RandomRunner();
-        let ll = new Launcher.StimuliLauncher(1000, rr);
-        await ll.Run()
+        await rr.Run()
     }
 </script>
 </body>

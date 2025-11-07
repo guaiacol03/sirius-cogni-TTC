@@ -52,42 +52,88 @@ export class RandomRunner {
         let _repeatsLong = {};
         for (let [k, v] of Object.entries(this.TrajLong)) {
             let nVals = []
-            for (let i= 0; i < 3; i++) { // repeat trajs in each category 3 times
+            for (let i= 0; i < 15; i++) { // repeat trajs in each category 15 times
                 nVals = nVals.concat(v);
             }
             nVals = ShuffleArray(nVals); // shuffle each category
             _repeatsLong[k] = nVals;
         }
 
+        let _repeatsShort = {};
+        for (let [k, v] of Object.entries(this.TrajLong)) {
+            let nVals = []
+            for (let i= 0; i < 10; i++) { // repeat trajs in each category 15 times
+                nVals = nVals.concat(v);
+            }
+            nVals = ShuffleArray(nVals); // shuffle each category
+            _repeatsShort[k] = nVals;
+        }
+
+        // create list of timings
+        let _repeatsTime =[];
+        for (let v of Lib.STIMULI_LIST) {
+            for (let i= 0; i < 15; i++) { // repeat each timing 15 times
+                _repeatsTime.push(v);
+            }
+        }
+        _repeatsTime = ShuffleArray(_repeatsTime);
+
         let _batchesLong = [];
-        // create 8 batches
-        for (let i = 0; i < 8; i++) {
+        // create  batches
+        for (let i = 0; i < 15; i++) {
             let tBatchLong = []; // trajs for occluded and unmasked in batch
-            // extract 3 top entries from repeats dict in each paradigm
+            // extract 6 top entries from repeats dict in each paradigm
             for (let [k, v] of Object.entries(_repeatsLong)) {
-                let extVals = v.splice(0, 3);
+                let extVals = v.splice(0, 6);
                 tBatchLong = tBatchLong.concat(extVals);
             }
-            let tBatchShuffle = ShuffleArray(tBatchLong);
+            let tLongShuffle = ShuffleArray(tBatchLong);
+
+            let tBatchShort = []; // trajs for occluded and unmasked in batch
+            // extract 4 top entries from repeats dict in each paradigm
+            for (let [k, v] of Object.entries(_repeatsShort)) {
+                let extVals = v.splice(0, 4);
+                tBatchShort = tBatchShort.concat(extVals);
+            }
+            let tShortShuffle = ShuffleArray(tBatchShort);
+
+            // extract 3 top entries from repeats dict in each paradigm
+            let durBatch = _repeatsTime.splice(0, 3);
+            let durBatchShuffle = ShuffleArray(durBatch);
 
             let pBatch = [] // paradigm numbers to shuffle
-            for (let j = 0; j < 3; j++) { // 4 paradigms
-                for (let k = 0; k < 5; k++) { // 5 repeats each
-                    pBatch.push(j)
-                }
+            for (let i = 0; i < 4; i++) { // 4 repeats of unmasked
+                pBatch.push(0);
+            }
+            for (let i = 0; i < 6; i++) { // 6 repeats of masked
+                pBatch.push(1);
+            }
+            for (let i = 0; i < 6; i++) { // 6 repeats of reverse
+                pBatch.push(2);
+            }
+            for (let i = 0; i < 3; i++) { // 3 repeats of interval
+                pBatch.push(3);
             }
             let pBatchShuffle = ShuffleArray(pBatch);
 
             let prepTrials = [];
             for (let v = 0; v < pBatchShuffle.length; v++) {
                 let tType = pBatchShuffle[v]; // init trial for each shuffled number
-                let tObj = {
-                    type: tType
+                let tTraj;
+                switch (tType) {
+                    case 1:
+                    case 2:
+                        tTraj = tLongShuffle.splice(0,1)[0];
+                        break;
+                    case 0:
+                        tTraj = tShortShuffle.splice(0,1)[0];
+                        break;
+                    case 3:
+                        tTraj = durBatchShuffle.splice(0,1)[0];
+                        break;
                 }
-                if (tType !== 3) { // if requires traj, pick first from shuffled trajs
-                    tObj.traj = tBatchShuffle.splice(0, 1)[0];
-                }
-                prepTrials.push(tObj);
+
+                prepTrials.push({type: tType, traj: tTraj});
             }
 
             this.Batches.push(prepTrials);
@@ -100,22 +146,24 @@ export class RandomRunner {
             let batch = this.Batches[i];
             for (let j = 0; j < batch.length; j++) {
                 let trial = batch[j];
-                if (trial.type === 0) {
-                    let t = new Launcher.UnmaskedLauncher(trial.traj, this);
-                    await t.Run();
-                    console.log(t.journal)
-                    await this.bannerHandler.waitWithBanner();
-                } else if (trial.type === 1) {
-                    let t = new Launcher.NormalLauncher(trial.traj, this);
-                    await t.Run();
-                    console.log(t.journal)
-                    await this.bannerHandler.waitWithBanner();
-                } else {
-                    let t = new Launcher.BackwardLauncher(trial.traj, this);
-                    await t.Run();
-                    console.log(t.journal)
-                    await this.bannerHandler.waitWithBanner();
+                let t;
+                switch (trial.type) {
+                    case 0:
+                        t = new Launcher.UnmaskedLauncher(trial.traj, this);
+                        break;
+                    case 1:
+                        t = new Launcher.NormalLauncher(trial.traj, this);
+                        break;
+                    case 2:
+                        t = new Launcher.BackwardLauncher(trial.traj, this);
+                        break;
+                    case 3:
+                        t = new Launcher.StimuliLauncher(trial.traj, this);
+                        break;
                 }
+                await t.Run();
+                console.log(t.journal)
+                await this.bannerHandler.waitWithBanner();
             }
         }
     }
