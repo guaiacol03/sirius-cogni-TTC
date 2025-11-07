@@ -3,6 +3,7 @@ import {DOMPathRenderer} from "./DOMPath.js";
 import {DOMFixationHandler, DOMBannerHandler} from "./DOMBanner.js";
 import * as Lib from "./TrajLibrary.js";
 import * as Launcher from "./LoggedLaunchers.js";
+import * as Path from "./Path.js";
 
 export function ShuffleArray(arr) {
     let resArr = [];
@@ -142,8 +143,9 @@ export class RandomRunner {
 
     async Run() {
         for (let i = 0; i < this.Batches.length; i++) {
-            alert(`batch ${i} of ${this.Batches.length}`);
             let batch = this.Batches[i];
+            let logOvershoot = [];
+
             for (let j = 0; j < batch.length; j++) {
                 let trial = batch[j];
                 let t;
@@ -162,9 +164,28 @@ export class RandomRunner {
                         break;
                 }
                 await t.Run();
+                let err;
+                if (trial.type <= 1) {
+                    let fullLen = Path.TotalDistance(trial.traj);
+                    err = Math.abs(t.journal.overshoot) / fullLen
+                } else if (trial.type === 2) {
+                    let fullTime = t.journal.endTime - t.journal.startTime;
+                    err = Math.abs(t.journal.judgement - fullTime) / fullTime;
+                } else {
+                    err = Math.abs(t.journal.judgement - t.journal.trajectory) / t.journal.trajectory;
+                }
+                logOvershoot.push(err);
+
                 console.log(t.journal)
                 await this.bannerHandler.waitWithBanner();
             }
+
+            let errSum = 0;
+            for (let j = 0; j < logOvershoot.length; j++) {
+                errSum += logOvershoot[j];
+            }
+            alert(`batch ${i+1} of ${this.Batches.length} completed with 
+            ${(errSum / this.Batches.length) * 100}% error`);
         }
     }
 }
