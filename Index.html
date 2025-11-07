@@ -161,12 +161,13 @@
 
 <script type="module">
     import {RandomRunner} from "./RandomRunner.js";
-    import {TrainLauncher} from "./_TrainLaunchers.js";
+    import * as Launcher from "./LoggedLaunchers.js"
 
     window.onload = async function() {
         // TODO add space presses to log
         let rr = new RandomRunner();
-        await rr.Run()
+        let ll = new Launcher.StimuliLauncher(1000, rr);
+        await ll.Run()
     }
 </script>
 </body>

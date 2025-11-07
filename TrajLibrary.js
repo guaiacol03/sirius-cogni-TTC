@@ -961,6 +961,12 @@ export const SHORT_S2 = new LibraryEntry("short_s2", [
     ],
 ], speed_s2);
 
+export const STIMULI_LIST = [
+    500,
+    1600,
+    2900
+]
+
 export const ENTRY_LIST = [
     LONG_S1,
     LONG_S2,

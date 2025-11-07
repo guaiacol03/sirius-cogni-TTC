@@ -31,9 +31,8 @@ export class UnmaskedLauncher {
 
     static async _run(testId) {
         // erase everything
-        this.player._ballHandler.style = "svg_point_hidden+1";
-        this.player._ballHandler.Update(null);
-        this.player._pathHandler.Update(null)
+        this.player._ballHandler.Update();
+        this.player._pathHandler.Update()
 
         this._fixPoint.Update(testId)
         await new Promise(resolve => setTimeout(resolve, 900));
@@ -124,9 +123,8 @@ export class BackwardLauncher {
     }
 
     async Run() {
-        this.player._ballHandler.style = "svg_point_hidden+1";
-        this.player._ballHandler.Update(null);
-        this.player._pathHandler.Update(null)
+        this.player._ballHandler.Update();
+        this.player._pathHandler.Update()
 
         this._fixPoint.Update(2)
         await new Promise(resolve => setTimeout(resolve, 900));
@@ -150,14 +148,60 @@ export class BackwardLauncher {
         this._fixPoint.Update(3)
 
         let currTime = performance.now();
-        await waitForSpace();
+        let v = await Promise.any([
+            waitForSpace(), // wait for space
+            new Promise(res => setTimeout(res, 10000, true)) // or 10s
+        ]);
         let finTime = performance.now();
 
+        this.journal["answered"] = !Boolean(v);
         this.journal["judgement"] = finTime - currTime;
     }
 
     async waitingCB() {
         return new Promise(res => {setTimeout(res, 900)})
+    }
+}
+
+export class StimuliLauncher {
+    duration
+    journal = {}
+
+    constructor(dur, meta) {
+        this._fixPoint = meta.fixHandler;
+        this.duration = dur;
+
+        meta.pathHandler.Update();
+        meta.ballHandler.Update();
+    }
+
+    async Run() {
+        // show cross for 900ms
+        this.journal["startTime"] = performance.now();
+        this._fixPoint.Update(3);
+        await new Promise(res => setTimeout(res, 900));
+
+        // show point for duration
+        this.journal["trajectory"] = this.duration;
+        this._fixPoint.Update(0);
+        await new Promise(res => setTimeout(res, this.duration));
+
+        // show cross for 900ms
+        this._fixPoint.Update(3);
+        await new Promise(res => setTimeout(res, 900));
+
+        // wait for user press
+        let startTime = performance.now();
+        this._fixPoint.Update(0);
+        let v = await Promise.any([
+            waitForSpace(), // wait for space
+            new Promise(res => setTimeout(res, 10000, true)) // or 10s
+        ]);
+        let endTime = performance.now();
+
+        this.journal["answered"] = !Boolean(v);
+        this.journal["judgement"] = endTime - startTime;
+        console.log(this.journal);
     }
 }
 

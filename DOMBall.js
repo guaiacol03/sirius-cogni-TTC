@@ -24,9 +24,11 @@ export class DOMBallAnimator {
         if (point) {
             this._ball.setAttribute("cx", point.x);
             this._ball.setAttribute("cy", point.y);
+            let spl = this.style.split('+')
+            this._ball.setAttribute("r", spl[1]);
+            this._ball.setAttribute("class", spl[0]);
+        } else {
+            this._ball.setAttribute("class", 'svg_point_hidden');
         }
-        let spl = this.style.split('+')
-        this._ball.setAttribute("r", spl[1]);
-        this._ball.setAttribute("class", spl[0]);
     }
 }
