@@ -4,7 +4,7 @@ import {DOMBallAnimator} from "./DOMBall.js";
 import {DOMPathRenderer} from "./DOMPath.js";
 import {NormalAnimator} from "./NormalAnimator.js";
 import {_BackwardAnimator} from "./_BackwardAnimator.js";
-import {calcHalfMask, waitForSpace} from "./LoggedLaunchers.js";
+import {calcHalfMask, waitForKey} from "./LoggedLaunchers.js";
 import {ShuffleArray} from "./RandomRunner.js"
 
 
@@ -60,12 +60,12 @@ export class TrainLauncher {
         anim.Load();
 
         this.setInstruction("instruct_normal_waiting");
-        await waitForSpace();
+        await waitForKey();
         this.setInstruction("instruct_normal_running");
         await anim.Play();
 
         this.setInstruction("instruct_normal_inspect");
-        await waitForSpace();
+        await waitForKey();
 
         this.setInstruction("instruct_repeat");
         for (let i = 1; i < this._trajectories.length; i++) {
@@ -91,12 +91,12 @@ export class TrainLauncher {
         anim.Load();
 
         this.setInstruction("instruct_nomask_waiting");
-        await waitForSpace();
+        await waitForKey();
         this.setInstruction("instruct_nomask_running");
         await anim.Play();
 
         this.setInstruction("instruct_nomask_inspect");
-        await waitForSpace();
+        await waitForKey();
 
         this.setInstruction("instruct_repeat");
         for (let i = 1; i < this._trajectories.length; i++) {
@@ -121,18 +121,18 @@ export class TrainLauncher {
         anim.LoadForward();
 
         this.setInstruction("instruct_backward_waiting_fwd");
-        await waitForSpace();
+        await waitForKey();
         this.setInstruction("instruct_backward_running_fwd");
         await anim.PlayForward();
         this.setInstruction("instruct_backward_inspect_fwd");
 
-        await waitForSpace();
+        await waitForKey();
         anim.LoadBackward();
         this.setInstruction("instruct_backward_running_bwd");
         await anim.PlayBackward();
 
         this.setInstruction("instruct_backward_inspect_bwd");
-        await waitForSpace();
+        await waitForKey();
 
         this.setInstruction("instruct_repeat");
         for (let i = 1; i < this._trajectories.length; i++) {
@@ -156,7 +156,7 @@ export class TrainLauncher {
 
     async runAll() {
         this.setInstruction("instruct_welcome");
-        await waitForSpace();
+        await waitForKey();
 
         await this._runUnmasked();
         await this._runNormal();
@@ -165,7 +165,7 @@ export class TrainLauncher {
 
     async waitWithBanner() {
         this._blockBanner.classList.remove('hidden');
-        await waitForSpace();
+        await waitForKey();
         this._blockBanner.classList.add('hidden');
     }
 }

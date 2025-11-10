@@ -1,16 +1,61 @@
-import {waitForSpace} from "./LoggedLaunchers.js";
+import {waitForKey} from "./LoggedLaunchers.js";
 
 export class DOMBannerHandler {
     blockBanner;
+    blockText;
+    timeBanner;
+    minInput;
+    secInput;
+    endText;
+    spaceText;
 
     constructor() {
         this.blockBanner = document.getElementById('svg_banner');
+        this.blockText = document.getElementById('banner_text');
+        this.timeBanner = document.getElementById('timeInputs');
+        this.minInput = document.getElementById('minutesInput');
+        this.secInput = document.getElementById('secondsInput');
+        let iTexts = document.getElementById('instructionTexts').contentDocument;
+        this.endText = iTexts.getElementById('batch_end').innerHTML;
+        this.spaceText = iTexts.getElementById('batch_space').innerHTML;
     }
 
     async waitWithBanner() {
+        if (!this.timeBanner.classList.contains('hidden')) {
+            this.timeBanner.classList.add('hidden')
+        }
+
+        this.blockText.innerHTML = this.spaceText;
+
         this.blockBanner.classList.remove('hidden');
-        await waitForSpace();
+        await waitForKey();
         this.blockBanner.classList.add('hidden');
+    }
+
+    async endWithBanner(data) {
+        if (this.timeBanner.classList.contains('hidden')) {
+            this.timeBanner.classList.remove('hidden');
+        }
+
+        this.blockText.innerHTML = eval('`' + this.endText + '`');
+
+        this.blockBanner.classList.remove('hidden');
+        for (let i = 0; i < 10; i++) {
+            await waitForKey("Enter");
+            let min = parseInt(this.minInput.value.trim());
+            let sec = parseInt(this.secInput.value.trim());
+            if (!(Number.isNaN(min) || Number.isNaN(sec))) {
+                let tSec = min*60 + sec;
+                if (tSec > 0) {
+                    this.blockBanner.classList.add('hidden');
+                    return tSec;
+                } else {
+                    alert("Оценка не может быть нулевой")
+                }
+            } else {
+                alert("Введено неверное число")
+            }
+        }
     }
 }
 

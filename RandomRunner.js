@@ -184,8 +184,13 @@ export class RandomRunner {
             for (let j = 0; j < logOvershoot.length; j++) {
                 errSum += logOvershoot[j];
             }
-            alert(`batch ${i+1} of ${this.Batches.length} completed with 
-            ${(errSum / this.Batches.length) * 100}% error`);
+
+            await this.bannerHandler.endWithBanner({
+                batch_count: this.Batches.length,
+                batch: i+1,
+                avg_accuracy: (errSum / this.Batches.length) * 100
+
+            })
         }
     }
 }

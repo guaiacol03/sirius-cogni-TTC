@@ -149,7 +149,7 @@ export class BackwardLauncher {
 
         let currTime = performance.now();
         let v = await Promise.any([
-            waitForSpace(), // wait for space
+            waitForKey(), // wait for space
             new Promise(res => setTimeout(res, 10000, true)) // or 10s
         ]);
         let finTime = performance.now();
@@ -194,7 +194,7 @@ export class StimuliLauncher {
         let startTime = performance.now();
         this._fixPoint.Update(0);
         let v = await Promise.any([
-            waitForSpace(), // wait for space
+            waitForKey(), // wait for space
             new Promise(res => setTimeout(res, 10000, true)) // or 10s
         ]);
         let endTime = performance.now();
@@ -205,13 +205,13 @@ export class StimuliLauncher {
     }
 }
 
-export async function waitForSpace() {
+export async function waitForKey(code = " ") {
     let rmCb;
     let resolveFn;
     let ret = new Promise(res => {resolveFn = res;})
     let cb = (e) => {
-        if (e.charCode === 0) {
-            console.log("space pressed")
+        console.log(`${e.key} pressed`)
+        if (e.key === code) {
             resolveFn();
             rmCb();
         }

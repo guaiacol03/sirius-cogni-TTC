@@ -14,19 +14,17 @@
 
         .instructions-box {
             width: 100%;
-            background-color: #e8f0fe;
+            background: #e8f0fe;
             border-bottom: 1px solid #ccc;
             padding: 10px 20px;
-            font-family: Arial, sans-serif;
-            font-size: 15px;
-            box-sizing: border-box;
+            font: 15px Arial, sans-serif;
             color: #333;
-            transition: all 0.3s ease;
+            box-sizing: border-box;
+            transition: 0.3s ease;
         }
 
         .instructions-box.hidden {
             height: 0;
-            width: 0;
             padding: 0;
             overflow: hidden;
             border: none;
@@ -38,47 +36,47 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #ffffff;
-            position: relative; /* Needed for overlay positioning */
+            background: #fff;
+            position: relative;
         }
 
         svg {
             max-width: 100%;
             max-height: 100%;
             border: 1px solid #ccc;
-            background-color: #ffffff;
+            background: #fff;
         }
 
+        /* --- SVG Elements --- */
         .svg_traj {
-            stroke: #000000;
+            stroke: #000;
             stroke-width: 2;
             fill: none;
         }
 
         .svg_point {
-            fill: #000000;
-            stroke: #000000;
+            fill: #000;
+            stroke: #000;
             stroke-width: 1;
         }
 
         .floating_ball {
-            fill: #00ff00;
-            stroke: #006600;
+            fill: #0f0;
+            stroke: #060;
             stroke-width: 2;
         }
 
         .svg_mask_traj {
-            stroke: #ffffff;
+            stroke: #fff;
             stroke-width: 25;
-            stroke-dasharray: 5,5;
+            stroke-dasharray: 5 5;
             fill: none;
-            opacity: 1.0;
             stroke-linecap: round;
         }
 
         .svg_mask_point {
-            fill: #ffffff;
-            stroke: #ff0000;
+            fill: #fff;
+            stroke: #f00;
             stroke-width: 2;
             opacity: 0.7;
         }
@@ -88,22 +86,23 @@
             display: none;
         }
 
-        /* TODO written by chatgpt, inspect */
+        .svg_fixation_pt {
+            fill: #f00;
+            stroke: #060;
+            stroke-width: 2;
+        }
+
+        /* --- Overlay Banner --- */
         .svg-banner {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 1);
+            inset: 0;
+            background: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: Arial, sans-serif;
-            font-size: 22px;
-            font-weight: bold;
+            font: bold 22px Arial, sans-serif;
             color: #333;
-            z-index: 10;
+            z-index: 10
         }
 
         .svg-banner.hidden {
@@ -111,16 +110,37 @@
             pointer-events: none;
         }
 
-        .svg_fixation_pt {
-            fill: #ff0000;
-            stroke: #006600;
-            stroke-width: 2;
+        .banner-content {
+            text-align: center;
+        }
+
+        /* --- Time Inputs --- */
+        .time-inputs {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .time-inputs input {
+            width: 60px;
+            padding: 5px;
+            font-size: 16px;
+            text-align: center;
+            border: 1px solid #aaa;
+            border-radius: 6px;
+        }
+
+        .time-inputs.hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-<div id="instructionsBox" class="instructions-box hidden"><!-- This won't be visible --></div>
+<div id="instructionsBox" class="instructions-box hidden"></div>
 
 <div class="svg-container">
     <svg id="animation_svg" viewBox="0 0 700 400" preserveAspectRatio="xMidYMid meet">
@@ -148,25 +168,35 @@
                 <line x1="0" x2="0" y1="-10" y2="10" class="svg_fixation_pt" />
             </g>
         </g>
-
-
     </svg>
 
     <div id="svg_banner" class="svg-banner hidden">
-        Нажмите "пробел" для продолжения
+        <div class="banner-content">
+            <p id="banner_text"></p>
+
+            <div class="time-inputs" id="timeInputs">
+                <label>
+                    Минуты:
+                    <input type="number" id="minutesInput" min="0" max="59" value="0">
+                </label>
+                <label>
+                    Секунды:
+                    <input type="number" id="secondsInput" min="0" max="59" value="0">
+                </label>
+            </div>
+        </div>
     </div>
 </div>
 
-<iframe src="./Instructions.html" id="instructionTexts" height="0" width="0"></iframe>
+<iframe src="./Text.html" id="instructionTexts" height="0" width="0"></iframe>
 
 <script type="module">
     import {RandomRunner} from "./RandomRunner.js";
     import * as Launcher from "./LoggedLaunchers.js"
 
     window.onload = async function() {
-        // TODO add space presses to log
         let rr = new RandomRunner();
-        await rr.Run()
+        await rr.Run();
     }
 </script>
 </body>
