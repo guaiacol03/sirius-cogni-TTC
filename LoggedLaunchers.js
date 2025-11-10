@@ -18,7 +18,13 @@ export class UnmaskedLauncher {
         this.player.advanceCB = this.loggerCallback.bind(this);
     }
 
+    firstLock = true;
     loggerCallback(time) {
+        if (this.firstLock) {
+            this.journal.passSegments[0] = time;
+            this.firstLock = false;
+        }
+
         if (this.player._animHandler.segment !== this.player._lastLevel) {
             this.journal.passSegments[this.player._animHandler.segment] = time;
         }
@@ -82,14 +88,21 @@ export class NormalLauncher {
         await UnmaskedLauncher._run.apply(this, [1]);
     }
 
+    firstLock = true;
     loggerCallback(time) {
+        if (this.firstLock) {
+            this.journal.passSegments[0] = time;
+            this.firstLock = false;
+        }
+
         let seg = this.player._animHandler.segment
         if (seg !== this.player._lastLevel) {
             let calcSeg = (
                 this.player._sliceLengths.beforePath > 0 &&
                 seg >= this.player._sliceLengths.beforePath) ?
-                seg : seg - 1;
+                seg - 1 : seg;
 
+            console.log(seg);
             if (this.player._sliceLengths.beforePath > 0 && seg === this.player._sliceLengths.beforePath) {
                 this.journal["passMask"] = time;
             } else {

@@ -49,6 +49,7 @@ export class StaticRunner {
                 let trial = batch[j];
                 if (trial.type !== 3) {
                     let traj = trial.traj;
+                    trial.trajTag = traj.tag;
                     if (traj.tag && traj.tag in this.trajDict) {
                         trial.traj = this.trajDict[traj.tag];
                     } else {
@@ -71,7 +72,7 @@ export class StaticRunner {
             let batch = this.Batches[i];
             let logOvershoot = [];
             let startTime = performance.now();
-            this.totalJournal[i] = {startTime, journal:[]};
+            this.totalJournal[i] = {startTime, tag: this.tag, journal:[]};
 
             for (let j = 0; j < batch.length; j++) {
                 let trial = batch[j];
@@ -102,7 +103,8 @@ export class StaticRunner {
                     err = Math.abs(t.journal.judgement - t.journal.trajectory) / t.journal.trajectory;
                 }
                 logOvershoot.push(err);
-                this.totalJournal[i].journal.push(Object.assign(t.journal, trial));
+                t.journal.tag = trial.trajTag;
+                this.totalJournal[i].journal.push(t.journal);
 
                 console.log(t.journal)
                 await this.bannerHandler.waitWithBanner();
@@ -121,7 +123,7 @@ export class StaticRunner {
             })
             this.totalJournal[i] = Object.assign({
                 duration: endTime - startTime,
-                judgement: this.Batches.length,
+                judgement: res,
                 errSum: errSum,
             }, this.totalJournal[i]);
         }
