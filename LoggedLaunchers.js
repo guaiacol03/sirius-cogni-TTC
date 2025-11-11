@@ -141,6 +141,8 @@ export class BackwardLauncher {
 
         await this.waitingCB();
 
+        this.player._ballHandler.Update();
+        this.player._pathHandler.Update();
         this._fixPoint.Update(3)
         let currTime = performance.now();
         let v = await Promise.any([
