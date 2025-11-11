@@ -11,7 +11,7 @@ export class UnmaskedLauncher {
     constructor(path, meta) {
         this._fixPoint = meta.fixHandler;
         this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
-        this.player.Configure(path, null);
+        this.player.Configure(path.segments, null);
         this.player.stopAtEnd = false;
         this.player.showResult = false;
 
@@ -77,8 +77,7 @@ export class NormalLauncher {
     constructor(path, meta) {
         this._fixPoint = meta.fixHandler;
         this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
-        let cMsk = calcHalfMask(path);
-        this.player.Configure(path, cMsk);
+        this.player.Configure(path.segments, path.mask);
         this.player.stopAtEnd = false;
 
         this.player.advanceCB = this.loggerCallback.bind(this);
@@ -112,16 +111,6 @@ export class NormalLauncher {
     }
 }
 
-export function calcHalfMask(path) {
-    let dist = Path.TotalDistance(path)
-    return {
-        countFrom: 0,
-        countTo: -1,
-        distance: dist / 2,
-        invert: false
-    }
-}
-
 export class BackwardLauncher {
     journal = {};
     player;
@@ -131,7 +120,7 @@ export class BackwardLauncher {
     constructor(path, meta) {
         this._fixPoint = meta.fixHandler;
         this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
-        this.player.Configure(path, null);
+        this.player.Configure(path.segments, null);
         this.player.stopAtEnd = true;
     }
 
@@ -152,14 +141,7 @@ export class BackwardLauncher {
 
         await this.waitingCB();
 
-        // revert path
-        let rPlayer = new NormalAnimator(this.player._pathHandler, this.player._ballHandler);
-        let rPath = Path.InvertPath(this.player.srcPath);
-        rPlayer.Configure(rPath, null);
-        this.player._ballHandler.style = "svg_point_hidden";
-        rPlayer.Load()
         this._fixPoint.Update(3)
-
         let currTime = performance.now();
         let v = await Promise.any([
             waitForKey(), // wait for space

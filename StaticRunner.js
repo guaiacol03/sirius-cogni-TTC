@@ -49,13 +49,19 @@ export class StaticRunner {
                 let trial = batch[j];
                 if (trial.type !== 3) {
                     let traj = trial.traj;
-                    trial.trajTag = traj.tag;
                     if (traj.tag && traj.tag in this.trajDict) {
                         trial.traj = this.trajDict[traj.tag];
                     } else {
-                        trial.traj = convTrajectory(traj);
+                        let nTraj = {
+                            segments: convTrajectory(traj),
+                            mask: {
+                                countFrom: 0, countTo: -1, distance: traj.mask, invert: false
+                            },
+                            tag: traj.tag,
+                        }
+                        trial.traj = nTraj
                         if (traj.tag) {
-                            this.trajDict[traj.tag] = trial.traj;
+                            this.trajDict[traj.tag] = nTraj;
                         }
                     }
                 }
@@ -103,7 +109,7 @@ export class StaticRunner {
                     err = Math.abs(t.journal.judgement - t.journal.trajectory) / t.journal.trajectory;
                 }
                 logOvershoot.push(err);
-                t.journal.tag = trial.trajTag;
+                t.journal.tag = trial.traj.tag;
                 this.totalJournal[i].journal.push(t.journal);
 
                 console.log(t.journal)
