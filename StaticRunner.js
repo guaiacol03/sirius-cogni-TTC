@@ -100,7 +100,7 @@ export class StaticRunner {
                 await t.Run();
                 let err;
                 if (trial.type <= 1) {
-                    let fullLen = Path.TotalDistance(trial.traj);
+                    let fullLen = Path.TotalDistance(trial.traj.segments);
                     err = Math.abs(t.journal.overshoot) / fullLen
                 } else if (trial.type === 2) {
                     let fullTime = t.journal.endTime - t.journal.startTime;
@@ -125,7 +125,7 @@ export class StaticRunner {
             let res = await this.bannerHandler.endWithBanner({
                 batch_count: this.Batches.length,
                 batch: i+1,
-                avg_accuracy: (errSum / this.Batches.length) * 100
+                avg_accuracy: (errSum / this.Batches[i].length) * 100
             })
             this.totalJournal[i] = Object.assign({
                 duration: endTime - startTime,

@@ -87,10 +87,11 @@ export class NormalLauncher {
         await UnmaskedLauncher._run.apply(this, [1]);
     }
 
+    // TODO fix gaps in indexing of calcSeg
     firstLock = true;
     loggerCallback(time) {
         if (this.firstLock) {
-            this.journal.passSegments[0] = time;
+            this.journal.passSegments.push(time);
             this.firstLock = false;
         }
 
@@ -105,7 +106,7 @@ export class NormalLauncher {
             if (this.player._sliceLengths.beforePath > 0 && seg === this.player._sliceLengths.beforePath) {
                 this.journal["passMask"] = time;
             } else {
-                this.journal.passSegments[calcSeg] = time;
+                this.journal.passSegments.push(time);
             }
         }
     }
