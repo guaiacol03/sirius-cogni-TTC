@@ -6,8 +6,6 @@ export class DOMBannerHandler {
     timeBanner;
     minInput;
     secInput;
-    endText;
-    spaceText;
     iTexts
 
     constructor() {
@@ -42,7 +40,7 @@ export class DOMBannerHandler {
         this.minInput.setAttribute('value',0);
         this.secInput.setAttribute('value', 0);
 
-        this.blockText.innerHTML = eval('`' + this._getText('endText') + '`');
+        this.blockText.innerHTML = eval('`' + this._getText('batch_end') + '`');
 
         this.blockBanner.classList.remove('hidden');
         for (let i = 0; i < 10; i++) {
