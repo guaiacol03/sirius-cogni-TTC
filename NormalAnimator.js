@@ -108,7 +108,7 @@ export class NormalAnimator {
 
         { // add final extension
             let lSeg = slicePath.afterPath[slicePath.afterPath.length - 1];
-            let finSeg = buildToBorder(lSeg);
+            let finSeg = buildOvershoot(lSeg);
 
             let convP = simpleConvert([finSeg.p1, finSeg.p2], lastHidden, false)
             let convSeg = simpleTrajMerge([convP[0]], [convP[1]], [lSeg],
@@ -207,32 +207,17 @@ export class NormalAnimator {
     }
 }
 
-function buildToBorder(seg) {
+function buildOvershoot(seg) {
     let dirY = seg.p2.y - seg.p1.y;
     let dirX = seg.p2.x - seg.p1.x;
+    let len = Math.hypot(dirX, dirY)
 
-    let cX;
-    if (dirX >= 0) {
-        let dX = 700 - seg.p2.x;
-        cX = dX / dirX;
-    } else {
-        let dX = seg.p2.x;
-        cX = dX / (-dirX);
-    }
+    let nX = dirX / len;
+    let nY = dirY / len;
 
-    let cY;
-    if (dirY >= 0) {
-        let dY = 400 - seg.p2.y;
-        cY = dY / dirY;
-    } else {
-        let dY = seg.p2.y;
-        cY = dY / (-dirY);
-    }
-
-    let c = Math.min(cX, cY);
     let nSeg = new Path.Segment(
         seg.p2,
-        new Path.Point(seg.p2.x + (dirX * c), seg.p2.y + (dirY * c)),
+        new Path.Point(seg.p2.x + (nX * 500), seg.p2.y + (nY * 500)),
         seg.speed
     );
     return nSeg
