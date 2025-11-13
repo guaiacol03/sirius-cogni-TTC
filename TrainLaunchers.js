@@ -1,68 +1,94 @@
 import * as Path from "./Path.js";
 import {NormalAnimator} from "./NormalAnimator.js";
+import {waitForKey} from "./LoggedLaunchers.js";
+import {convTrajectory} from "./StaticRunner.js";
 
-export class UnmaskedLauncher {
-    journal = {
-        passSegments: []
-    };
-    _fixPoint;
-    player;
+export class TrainLauncher {
+    trajs
 
-    constructor(path, meta) {
-        this._fixPoint = meta.fixHandler;
+    constructor(meta) {
+        Object.assign(this, meta);
 
-        this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
-        this.player.Configure(path.segments, null);
-        this.player.stopAtEnd = false;
-        this.player.showResult = true;
+        let library = JSON.parse(document.getElementById("trajJsonLib").
+            contentDocument.getElementById("traj_testing").textContent);
 
-        this.player.advanceCB = this.loggerCallback.bind(this);
-    }
-
-    firstLock = true;
-    loggerCallback(time) {
-        if (this.firstLock) {
-            this.journal.passSegments[0] = time;
-            this.firstLock = false;
+        for (let k in library) {
+            let bat = library[k];
+            for (let i = 0; i < bat.length; i++) {
+                let trj = bat[i];
+                let nObj = {
+                    segments: convTrajectory(trj),
+                    mask: {
+                        countFrom: 0, countTo: -1, distance: trj.mask, invert: false
+                    }
+                }
+                bat[i] = nObj;
+            }
+            library[k] = bat;
         }
 
-        if (this.player._animHandler.segment !== this.player._lastLevel) {
-            this.journal.passSegments[this.player._animHandler.segment] = time;
+        this.trajs = library;
+    }
+
+    async TrainUnmasked() {
+        await this.bannerHandler.echoBanner('instruct_nomask');
+
+        for (let i = 0; i < this.trajs.unmasked.length; i++) {
+            let path = this.trajs.unmasked[i];
+            let player = new NormalAnimator(this.pathHandler, this.ballHandler);
+            player.Configure(path.segments, null);
+
+            this.fixHandler.Update(4)
+            await TrainLauncher._play(player);
+            await this.bannerHandler.waitWithBanner();
         }
     }
 
-    async Run() {
-        await UnmaskedLauncher._run.apply(this, [0]);
+    async TrainNormal() {
+        await this.bannerHandler.echoBanner('instruct_nomask');
+
+        for (let i = 0; i < this.trajs.normal.length; i++) {
+            let path = this.trajs.normal[i];
+            let player = new NormalAnimator(this.pathHandler, this.ballHandler);
+            player.Configure(path.segments, path.mask);
+            player.showResult = true;
+
+            this.fixHandler.Update(1)
+            await TrainLauncher._play(player);
+            await this.bannerHandler.waitWithBanner();
+        }
+    }
+
+    async TrainBackward() {
+        await this.bannerHandler.echoBanner('instruct_backward');
+
+        for (let i = 0; i < this.trajs.backward.length; i++) {
+            let path = this.trajs.backward[i];
+            let player = new NormalAnimator(this.pathHandler, this.ballHandler);
+            player.Configure(path.segments, null);
+            player.stopAtEnd = true;
+
+            this.fixHandler.Update(2)
+            await TrainLauncher._play(player);
+
+            this.ballHandler.Update();
+            this.pathHandler.Update();
+
+            this.fixHandler.Update(0)
+            await waitForKey(" ")
+            await this.bannerHandler.waitWithBanner();
+        }
+    }
+
+    static async _play(player) {
+        player._ballHandler.Update();
+        player._pathHandler.Update()
         await new Promise(resolve => setTimeout(resolve, 900));
-    }
 
-    static async _run(testId) {
-        // erase everything
-        this.player._ballHandler.Update();
-        this.player._pathHandler.Update()
-
-        this._fixPoint.Update(testId)
+        player._ballHandler.style = "floating_ball+10";
+        player.Load();
+        await player.Play();
         await new Promise(resolve => setTimeout(resolve, 900));
-
-        this.player._ballHandler.style = "floating_ball+10";
-        this.player.Load();
-        await this.player.Play();
-
-        this.journal["startTime"] = this.player._animHandler.startTimestamp;
-        this.journal["endTime"] = this.player._animHandler.lastTimestamp;
-
-        this.journal["endReason"] = this.player.endCode;
-        // endCode === "LastPoint" should never occur
-        if (this.player.endCode === "Spacebar") {
-            // path is always elongated with a final segment, even if player stops at target point
-            let totalDist = Path.TotalDistance(this.player.srcPath);
-            let userDist = Path.PosToDistance(this.player.path, this.player._animHandler);
-
-            this.journal["overshoot"] = userDist - totalDist;
-        } else if (this.player.endCode === "Overshoot") {
-            // if animator overshoots even the last segment (from imperfect frame subdivision)
-            // !! when path ends naturally, overshoot is counted towards position of the same segment
-            this.journal["overshoot"] = this.player._animHandler.position;
-        }
     }
 }
+

@@ -8,6 +8,7 @@ export class DOMBannerHandler {
     secInput;
     endText;
     spaceText;
+    iTexts
 
     constructor() {
         this.blockBanner = document.getElementById('svg_banner');
@@ -15,9 +16,11 @@ export class DOMBannerHandler {
         this.timeBanner = document.getElementById('timeInputs');
         this.minInput = document.getElementById('minutesInput');
         this.secInput = document.getElementById('secondsInput');
-        let iTexts = document.getElementById('instructionTexts').contentDocument;
-        this.endText = iTexts.getElementById('batch_end').innerHTML;
-        this.spaceText = iTexts.getElementById('batch_space').innerHTML;
+        this.iTexts = document.getElementById('instructionTexts').contentDocument;
+    }
+
+    _getText(id) {
+        return this.iTexts.getElementById(id).innerHTML
     }
 
     async waitWithBanner() {
@@ -25,7 +28,7 @@ export class DOMBannerHandler {
             this.timeBanner.classList.add('hidden')
         }
 
-        this.blockText.innerHTML = this.spaceText;
+        this.blockText.innerHTML = this._getText('batch_space');
 
         this.blockBanner.classList.remove('hidden');
         await waitForKey();
@@ -39,7 +42,7 @@ export class DOMBannerHandler {
         this.minInput.setAttribute('value',0);
         this.secInput.setAttribute('value', 0);
 
-        this.blockText.innerHTML = eval('`' + this.endText + '`');
+        this.blockText.innerHTML = eval('`' + this._getText('endText') + '`');
 
         this.blockBanner.classList.remove('hidden');
         for (let i = 0; i < 10; i++) {
@@ -60,13 +63,16 @@ export class DOMBannerHandler {
         }
     }
 
-    async echoBanner(text) {
+    async echoBanner(name) {
         if (!this.timeBanner.classList.contains('hidden')) {
             this.timeBanner.classList.add('hidden')
         }
 
-        this.blockText.innerHTML = text;
+        this.blockText.innerHTML = this._getText(name);
+
+        this.blockBanner.classList.remove('hidden')
         await waitForKey(" ");
+        this.blockBanner.classList.add('hidden');
     }
 }
 

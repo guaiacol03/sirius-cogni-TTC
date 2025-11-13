@@ -13,24 +13,6 @@
             overflow: hidden;
         }
 
-        .instructions-box {
-            width: 100%;
-            background: #e8f0fe;
-            border-bottom: 1px solid #ccc;
-            padding: 10px 20px;
-            font: 15px Arial, sans-serif;
-            color: #333;
-            box-sizing: border-box;
-            transition: 0.3s ease;
-        }
-
-        .instructions-box.hidden {
-            height: 0;
-            padding: 0;
-            overflow: hidden;
-            border: none;
-        }
-
         /* --- Container and SVG --- */
         .svg-container {
             width: 100%;
@@ -164,8 +146,6 @@
 </head>
 <body>
 
-<div id="instructionsBox" class="instructions-box hidden"></div>
-
 <div class="svg-container">
     <!-- Save and Exit Button -->
     <button id="saveExitBtn">Save and Exit</button>
@@ -225,11 +205,15 @@
 
 <script type="module">
     import {StaticRunner} from "./StaticRunner.js";
-    import * as Launcher from "./LoggedLaunchers.js"
+    import * as Train from "./TrainLaunchers.js";
 
     window.onload = async function() {
-        let rr = new StaticRunner();
-        await rr.Run();
+        let sr = new StaticRunner();
+        let tr = new Train.TrainLauncher(sr);
+
+        await tr.TrainUnmasked()
+        await tr.TrainNormal()
+        await tr.TrainBackward()
     }
 </script>
 </body>
