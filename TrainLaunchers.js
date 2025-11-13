@@ -14,7 +14,7 @@ export class UnmaskedLauncher {
         this.player = new NormalAnimator(meta.pathHandler, meta.ballHandler);
         this.player.Configure(path.segments, null);
         this.player.stopAtEnd = false;
-        this.player.showResult = false;
+        this.player.showResult = true;
 
         this.player.advanceCB = this.loggerCallback.bind(this);
     }

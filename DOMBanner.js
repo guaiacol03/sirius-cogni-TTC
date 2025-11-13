@@ -36,6 +36,8 @@ export class DOMBannerHandler {
         if (this.timeBanner.classList.contains('hidden')) {
             this.timeBanner.classList.remove('hidden');
         }
+        this.minInput.setAttribute('value',0);
+        this.secInput.setAttribute('value', 0);
 
         this.blockText.innerHTML = eval('`' + this.endText + '`');
 
@@ -57,6 +59,15 @@ export class DOMBannerHandler {
             }
         }
     }
+
+    async echoBanner(text) {
+        if (!this.timeBanner.classList.contains('hidden')) {
+            this.timeBanner.classList.add('hidden')
+        }
+
+        this.blockText.innerHTML = text;
+        await waitForKey(" ");
+    }
 }
 
 export class DOMFixationHandler {
@@ -70,6 +81,8 @@ export class DOMFixationHandler {
         elem = document.querySelector("svg g#svg_fixation_rhomb")
         this._groupArray.push(elem);
         elem = document.querySelector("svg g#svg_fixation_cross")
+        this._groupArray.push(elem);
+        elem = document.querySelector("svg g#svg_fixation_triangle")
         this._groupArray.push(elem);
 
         this.Update();

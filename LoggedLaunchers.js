@@ -31,7 +31,7 @@ export class UnmaskedLauncher {
     }
 
     async Run() {
-        await UnmaskedLauncher._run.apply(this, [0]);
+        await UnmaskedLauncher._run.apply(this, [4]);
         await new Promise(resolve => setTimeout(resolve, 900));
     }
 
@@ -144,7 +144,7 @@ export class BackwardLauncher {
 
         this.player._ballHandler.Update();
         this.player._pathHandler.Update();
-        this._fixPoint.Update(3)
+        this._fixPoint.Update(0)
         let currTime = performance.now();
         let v = await Promise.any([
             waitForKey(), // wait for space
