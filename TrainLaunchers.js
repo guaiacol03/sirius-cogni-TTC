@@ -45,7 +45,7 @@ export class TrainLauncher {
     }
 
     async TrainNormal() {
-        await this.bannerHandler.echoBanner('instruct_nomask');
+        await this.bannerHandler.echoBanner('instruct_normal');
 
         for (let i = 0; i < this.trajs.normal.length; i++) {
             let path = this.trajs.normal[i];

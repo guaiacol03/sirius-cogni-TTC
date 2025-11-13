@@ -26,7 +26,7 @@ export class UnmaskedLauncher {
         }
 
         if (this.player._animHandler.segment !== this.player._lastLevel) {
-            this.journal.passSegments[this.player._animHandler.segment] = time;
+            this.journal.passSegments.push(time);
         }
     }
 
@@ -97,11 +97,6 @@ export class NormalLauncher {
 
         let seg = this.player._animHandler.segment
         if (seg !== this.player._lastLevel) {
-            let calcSeg = (
-                this.player._sliceLengths.beforePath > 0 &&
-                seg >= this.player._sliceLengths.beforePath) ?
-                seg - 1 : seg;
-
             console.log(seg);
             if (this.player._sliceLengths.beforePath > 0 && seg === this.player._sliceLengths.beforePath) {
                 this.journal["passMask"] = time;
