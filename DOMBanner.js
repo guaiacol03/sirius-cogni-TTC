@@ -33,7 +33,7 @@ export class DOMBannerHandler {
         this.blockBanner.classList.add('hidden');
     }
 
-    async endWithBanner(data) {
+    async endWithBanner() {
         if (this.timeBanner.classList.contains('hidden')) {
             this.timeBanner.classList.remove('hidden');
         }
