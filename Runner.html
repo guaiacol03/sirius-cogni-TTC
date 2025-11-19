@@ -220,7 +220,7 @@
     let logName;
     {
         let htp = document.HTTPParams;
-        let baseName = htp.participantID + '(' + htp.workstationID + ')_' + htp.testType;
+        let baseName = htp.participantId + '(' + htp.workstationId + ')_' + htp.testType;
         let response = await fetch('/Api/AllocFile.py?base=' + encodeURIComponent(baseName));
         logName = response.body;
     }
