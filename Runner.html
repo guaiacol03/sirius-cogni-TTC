@@ -207,11 +207,25 @@
     import {StaticRunner} from "./StaticRunner.js";
     import * as Train from "./TrainLaunchers.js";
 
+    let LOG = {};
+
     const hash = window.location.hash.substring(1);
     if (hash) {
         document.HTTPParams = JSON.parse(decodeURIComponent(hash));
         console.log('Hash params:', document.HTTPParams);
     }
+
+    Object.assign(LOG, hash);
+    LOG.testStart = performance.now();
+    let logName;
+    {
+        let baseName = hash.participantID + '(' + hash.workstationID + ')_' + hash.testType;
+        let response = await fetch('/Api/AllocFile.py?base=' + encodeURIComponent(baseName));
+        logName = response.body;
+    }
+
+    console.log(logName)
+
 
     window.onload = async function() {
         let sr = new StaticRunner();
