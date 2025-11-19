@@ -2,3 +2,5 @@ RewriteEngine On
 
 Header always set X-username expr=%{REMOTE_USER}
 RewriteRule "^\/*$" "-" [R=204]
+
+Action Allocate ./AllocFile.py
