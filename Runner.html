@@ -219,7 +219,8 @@
     LOG.testStart = performance.now();
     let logName;
     {
-        let baseName = hash.participantID + '(' + hash.workstationID + ')_' + hash.testType;
+        let htp = document.HTTPParams;
+        let baseName = htp.participantID + '(' + htp.workstationID + ')_' + htp.testType;
         let response = await fetch('/Api/AllocFile.py?base=' + encodeURIComponent(baseName));
         logName = response.body;
     }
