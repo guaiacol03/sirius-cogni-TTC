@@ -32,5 +32,5 @@ while os.path.exists(os.path.join(saves_dir, f"{unique_filename}.json")):
 # Add json extension
 result_filename = f"{unique_filename}.json"
 
-print("Content-Type: application/json\n")
+print("Content-Type: text/plain\n")
 print(result_filename)
