@@ -43,7 +43,7 @@
     window.onload = async function() {
         workstationId = "Error"
         try {
-            let response = await fetch('/login');
+            let response = await fetch('/Login/');
             let username = response.headers.get('X-username');
             workstationId = username || 'Unknown';
         } catch (e) {
