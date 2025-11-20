@@ -35,7 +35,6 @@ export class StaticRunner {
         this.ballHandler = new DOMBallAnimator();
         this.fixHandler = new DOMFixationHandler()
         this.bannerHandler = new DOMBannerHandler();
-        this.saveButton = document.getElementById("saveExitBtn");
         let library = JSON.parse(document.getElementById("trajJsonLib").
             contentDocument.getElementsByClassName("library_json")[0].textContent);
 
@@ -72,8 +71,6 @@ export class StaticRunner {
     }
 
     async Run() {
-        this.saveButton.addEventListener("click", this.Save);
-
         for (let i = 0; i < this.Batches.length; i++) {
             let batch = this.Batches[i];
             let logOvershoot = [];
@@ -134,21 +131,6 @@ export class StaticRunner {
             }, this.totalJournal[i]);
         }
     }
-
-    Save = function () {
-        const json = JSON.stringify(this.totalJournal);
-        const blob = new Blob([json], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = 'log.json';
-        a.click();
-
-        URL.revokeObjectURL(url);
-
-        window.location.href = "./index.html"
-    }.bind(this)
 }
 
 export function convTrajectory(src) {

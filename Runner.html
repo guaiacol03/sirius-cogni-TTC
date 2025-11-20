@@ -207,36 +207,41 @@
     import {StaticRunner} from "./StaticRunner.js";
     import * as Train from "./TrainLaunchers.js";
 
-    let LOG = {};
-
-    const hash = window.location.hash.substring(1);
-    if (hash) {
-        document.HTTPParams = JSON.parse(decodeURIComponent(hash));
-        console.log('Hash params:', document.HTTPParams);
-    }
-
-    Object.assign(LOG, hash);
-    LOG.testStart = performance.now();
-    let logName;
-    {
-        let htp = document.HTTPParams;
-        let baseName = htp.participantId + '(' + htp.workstationId + ')_' + htp.testType;
-        let response = await fetch('/Api/AllocFile.py?base=' + encodeURIComponent(baseName));
-        logName = response.body;
-    }
-
-    console.log(logName)
-
-
     window.onload = async function() {
-        let sr = new StaticRunner();
-        if (!document.HTTPParams) {
-            await sr.bannerHandler.echoBanner("invalid_hash");
-            window.location.href = `http://${window.location.host}`;
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            document.HTTPParams = JSON.parse(decodeURIComponent(hash));
+        } else {
+            alert('invalid starting params');
+            document.location.href = `http://${window.location.host}`
         }
 
+        let LOG = {testType: document.HTTPParams.testType,
+            userId: document.HTTPParams.participantId};
+
+        {
+            let htp = document.HTTPParams;
+            let baseName = htp.participantId + '(' + htp.workstationId + ')_' + htp.testType;
+            let response = await fetch('/Alloc?base=' + encodeURIComponent(baseName));
+            document.ExportName = await response.text();
+        }
+
+        let sr = new StaticRunner();
+
+        let saveButton = document.getElementById("saveExitBtn");
+        saveButton.addEventListener("click", async function () {
+                Object.assign(LOG, sr.totalJournal);
+                LOG.testEnd = performance.now();
+                await fetch('/Saves/' + document.ExportName, {
+                    method: 'PUT',
+                    body: JSON.stringify(LOG)
+                });
+                document.location.href = `http://${window.location.host}`;
+        });
+        LOG.testStart = performance.now();
+
         if (document.HTTPParams.testType === 'training') {
-            await sr.bannerHandler.echoBanner('instruct_welcome');
+
 
             let tr = new Train.TrainLauncher(sr);
             await tr.TrainUnmasked()
@@ -244,7 +249,7 @@
             await tr.TrainBackward()
         } else {
             await sr.Run()
-            sr.Save()
+            saveButton.click();
         }
     }
 </script>
