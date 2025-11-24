@@ -221,8 +221,12 @@
 
         {
             let htp = document.HTTPParams;
-            let baseName = htp.participantId + '(' + htp.workstationId + ')_' + htp.testType;
+            let baseName = [htp.participantId, htp.workstationId, htp.testType].join('-');
             let response = await fetch('/Alloc?base=' + encodeURIComponent(baseName));
+            if (!response.ok) {
+                alert('Could not allocate log file');
+                document.location.href = `http://${window.location.host}`
+            }
             document.ExportName = await response.text();
         }
 

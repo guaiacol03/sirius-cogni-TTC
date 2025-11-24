@@ -52,13 +52,18 @@
         document.getElementById('workstationId').textContent = workstationId;
     }
 
-
+    const id_regex = /^[A-Za-z0-9_-]+$/;
     function startTest() {
         const participantId = document.getElementById('participantId').value;
         const testType = document.getElementById('testType').value;
 
         if (!participantId) {
             alert('Please enter Participant ID');
+            return;
+        }
+        if (!id_regex.test(participantId)) {
+            console.log(participantId)
+            alert('ID can contain only letters, numbers, \- and \_');
             return;
         }
 
